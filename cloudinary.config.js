@@ -1,6 +1,6 @@
 window.CLOUDINARY_CONFIG = {
-  cloudName: "YOUR_CLOUD_NAME",
-  uploadPreset: "YOUR_UNSIGNED_PRESET",
+  cloudName: "dgtmr3fzt",
+  uploadPreset: "dgtmr3fzt",
   folder: "tilted-hannam",
   sources: ["local", "camera", "url"],
   multiple: false
