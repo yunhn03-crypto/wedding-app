@@ -417,8 +417,8 @@
         <div class="note">
           <b>mode</b><br/>
           customer: no image edit buttons.<br/>
-          admin: open with <b>?admin=1</b> to connect image urls.<br/>
-          production: shared images come from <b>admin_option_image_map.json</b>.
+          admin: open with <b>?admin=1</b>, then click <b>upload</b> or connect image urls.<br/>
+          shared images come from <b>admin_option_image_map.json</b>.
         </div>
       </div>
     </aside>
@@ -448,6 +448,8 @@
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
+<script src="./cloudinary.config.js"></script>
 
 <script>
   const params = new URLSearchParams(location.search);
@@ -457,6 +459,61 @@
   // shared image map loaded from external JSON file
   let REMOTE_OPTION_IMAGE_MAP = {};
   let ADMIN_RUNTIME_IMAGE_MAP = {};
+
+  const CLOUDINARY_CONFIG = (window.CLOUDINARY_CONFIG && typeof window.CLOUDINARY_CONFIG === "object")
+    ? window.CLOUDINARY_CONFIG
+    : {
+        cloudName: "",
+        uploadPreset: "",
+        folder: "tilted-hannam",
+        sources: ["local", "camera", "url"],
+        multiple: false
+      };
+
+  function cloudinaryReady(){
+    return !!(window.cloudinary && CLOUDINARY_CONFIG.cloudName && CLOUDINARY_CONFIG.uploadPreset);
+  }
+
+  function openCloudinaryUpload(targetKey, afterUpload){
+    if(!IS_ADMIN){
+      alert("admin mode only");
+      return;
+    }
+    if(!cloudinaryReady()){
+      alert("cloudinary.config.js 설정이 필요합니다.");
+      return;
+    }
+
+    const widget = window.cloudinary.createUploadWidget({
+      cloudName: CLOUDINARY_CONFIG.cloudName,
+      uploadPreset: CLOUDINARY_CONFIG.uploadPreset,
+      folder: CLOUDINARY_CONFIG.folder || "tilted-hannam",
+      sources: Array.isArray(CLOUDINARY_CONFIG.sources) ? CLOUDINARY_CONFIG.sources : ["local", "camera", "url"],
+      multiple: !!CLOUDINARY_CONFIG.multiple,
+      resourceType: "image",
+      clientAllowedFormats: ["jpg","jpeg","png","webp","avif"],
+      maxFiles: 1,
+      showAdvancedOptions: false,
+      cropping: false,
+      theme: "minimal"
+    }, (error, result) => {
+      if(error){
+        console.error(error);
+        alert("업로드 실패");
+        return;
+      }
+      if(result && result.event === "success"){
+        const secureUrl = result.info && result.info.secure_url ? result.info.secure_url : "";
+        if(secureUrl){
+          ADMIN_RUNTIME_IMAGE_MAP[targetKey] = secureUrl;
+          if(typeof afterUpload === "function") afterUpload(secureUrl);
+          render();
+        }
+      }
+    });
+
+    widget.open();
+  }
 
   async function loadRemoteImageMap(){
     try{
