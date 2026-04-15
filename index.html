@@ -1,0 +1,1426 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TILTED HANNAM | bespoke direction</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#111111;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --card:#f9fafb;
+      --accent:#111111;
+      --shadow: 0 8px 24px rgba(0,0,0,.06);
+      --radius: 16px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Pretendard,Apple SD Gothic Neo,Noto Sans KR,sans-serif;
+      color:var(--fg);
+      background:linear-gradient(180deg,#fff, #fbfbfb);
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:saturate(180%) blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:16px; }
+    .brand{
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      justify-content:space-between;
+    }
+    .title{ display:flex; flex-direction:column; gap:2px; }
+    .title h1{ margin:0; font-size:14px; letter-spacing:.6px; text-transform:lowercase; }
+    .title p{ margin:0; color:var(--muted); font-size:12px; text-transform:lowercase; }
+
+    .top-actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    button{
+      appearance:none; border:1px solid var(--line); background:#fff;
+      padding:10px 12px; border-radius:12px; cursor:pointer;
+      font-weight:700; font-size:13px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+      text-transform:lowercase;
+    }
+    button.primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
+    button.ghost{ background:transparent; }
+    button:hover{ border-color:#d1d5db; }
+    button:disabled{ opacity:.5; cursor:not-allowed; }
+
+    .modeBadge, .privateBadge{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:12px;
+      color:var(--muted);
+      user-select:none;
+      white-space:nowrap;
+      text-transform:lowercase;
+    }
+    .modeDot{ width:8px; height:8px; border-radius:999px; background:#9ca3af; }
+    .modeDot.admin{ background:#111; }
+    .modeDot.customer{ background:#16a34a; }
+    .lockDot{ width:8px; height:8px; border-radius:999px; background:#111; }
+
+    .grid{
+      display:grid; grid-template-columns: 1.2fr .8fr; gap:14px;
+      padding:16px;
+    }
+    @media (max-width: 920px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      background:var(--bg);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg, #fff, #fafafa);
+    }
+    .card .hd .kicker{ font-size:12px; color:var(--muted); margin:0 0 6px; text-transform:lowercase; }
+    .card .hd h2{ margin:0; font-size:16px; text-transform:lowercase; }
+    .card .bd{ padding:14px; }
+
+    .summaryTitleCaps{
+      text-transform:uppercase !important;
+      letter-spacing:.8px;
+      text-align:center;
+      width:100%;
+    }
+
+    .stepper{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin:0; padding:10px 14px;
+      border-top:1px solid var(--line);
+      background:#fff;
+    }
+    .pill{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:#fff;
+      user-select:none;
+      cursor:pointer;
+      text-transform:lowercase;
+    }
+    .pill.active{ color:#fff; background:var(--accent); border-color:var(--accent); }
+
+    .q{
+      display:flex; flex-direction:column; gap:8px;
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      margin-bottom:12px;
+    }
+    .q.noMb{ margin-bottom:0; }
+    .q .qtitle{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .q .qtitle strong{ font-size:14px; text-transform:lowercase; }
+    .q .qtitle span{ font-size:12px; color:var(--muted); text-transform:lowercase; }
+
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width: 520px){
+      .row{ grid-template-columns:1fr; }
+    }
+
+    input[type="text"], input[type="date"], textarea{
+      width:100%;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      outline:none;
+      font-size:14px;
+      background:#fff;
+    }
+    textarea{ min-height:90px; resize:vertical; }
+    input:focus, textarea:focus{ border-color:#c7c7c7; }
+
+    .hr{ height:1px; background:var(--line); margin:10px 0; }
+
+    .note{
+      font-size:12px; color:var(--muted); line-height:1.55;
+      background:var(--card); border:1px dashed var(--line);
+      padding:10px 12px; border-radius:14px;
+      text-transform:lowercase;
+    }
+
+    .footer-actions{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between;
+      padding:14px;
+      border-top:1px solid var(--line);
+      background:#fff;
+    }
+    .footer-actions .left, .footer-actions .right{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+
+    .optGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:16px;
+    }
+    @media (max-width: 760px){
+      .optGrid{ grid-template-columns:1fr; }
+    }
+    .optCard{
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:#fff;
+      cursor:pointer;
+      box-shadow: 0 1px 0 rgba(0,0,0,.03);
+      transition: transform .05s ease, border-color .05s ease;
+    }
+    .optCard:hover{ border-color:#d1d5db; }
+    .optCard.active{
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(17,17,17,.08);
+    }
+    .optHead{
+      padding:14px 14px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .optHead .label{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      font-weight:900;
+      font-size:18px;
+      text-transform:lowercase;
+    }
+    .optHead .hint{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+      text-align:right;
+      min-width:120px;
+      text-transform:lowercase;
+    }
+    .radioDot{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:22px;height:22px;
+      border-radius:999px;
+      border:2px solid var(--line);
+      margin-top:2px;
+      flex:0 0 auto;
+    }
+    .optCard.active .radioDot{
+      border-color: var(--accent);
+      background: var(--accent);
+      color:#fff;
+    }
+    .radioDot::after{
+      content:"";
+      width:8px;height:8px;
+      border-radius:999px;
+      background:transparent;
+    }
+    .optCard.active .radioDot::after{
+      background:#fff;
+    }
+
+    .optCanvas{
+      position:relative;
+      width:100%;
+      aspect-ratio: 4 / 3;
+      background:
+        linear-gradient(135deg, #f8fafc 25%, #ffffff 25%, #ffffff 50%, #f8fafc 50%, #f8fafc 75%, #ffffff 75%, #ffffff 100%);
+      background-size: 24px 24px;
+      border-top:1px solid var(--line);
+    }
+    .optCanvas img{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      background:#fff;
+    }
+    .optPlaceholder{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      padding:16px;
+      color:var(--muted);
+      text-align:center;
+      font-size:12px;
+      line-height:1.6;
+      text-transform:lowercase;
+    }
+    .optTools{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      padding:10px 12px 12px;
+      border-top:1px solid var(--line);
+      background:linear-gradient(180deg,#fff,#fafafa);
+    }
+    body.customer-mode .optTools{ display:none !important; }
+
+    .summaryBlock{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      border:1px solid var(--line);
+      background:#fff;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:#111;
+      text-transform:lowercase;
+      width:fit-content;
+      max-width:100%;
+    }
+    .tag.muted{ color:var(--muted); }
+
+    @media (min-width: 921px){
+      aside.card{
+        position: sticky;
+        top: 86px;
+        align-self: start;
+        max-height: calc(100vh - 110px);
+        overflow: auto;
+      }
+    }
+
+    #pdfSheet{ display:none; }
+    @media print{
+      header, main { display:none !important; }
+      #pdfSheet{ display:block !important; }
+      body{ background:#fff; }
+    }
+
+    #pdfSheet{
+      padding:14mm 12mm;
+      font-family: system-ui,-apple-system,Apple SD Gothic Neo,Noto Sans KR,sans-serif;
+      color:#111;
+      page-break-inside: avoid;
+    }
+    .pdfTitle{
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.6px;
+      margin-bottom:5mm;
+      text-transform:uppercase;
+      text-align:center;
+    }
+    .pdfSub{
+      font-size:12px;
+      color:#444;
+      margin-bottom:6mm;
+      text-align:center;
+    }
+    .pdfBox{
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:10px;
+      margin-bottom:4mm;
+      page-break-inside: avoid;
+    }
+    .pdfBox h3{
+      margin:0 0 8px;
+      font-size:13px;
+      font-weight:900;
+      text-transform:none;
+      letter-spacing:.2px;
+    }
+    .pdfRow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:4px 0;
+      border-bottom:1px dashed #eee;
+      font-size:11px;
+    }
+    .pdfRow:last-child{ border-bottom:none; }
+    .pdfK{ color:#555; text-transform:lowercase; }
+    .pdfV{
+      font-weight:800;
+      text-align:right;
+      white-space:pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap brand">
+    <div class="title">
+      <h1>bespoke selections</h1>
+    </div>
+
+    <div class="top-actions">
+      <span class="privateBadge" title="private open">
+        <span class="lockDot"></span>
+        private open
+      </span>
+
+      <span class="modeBadge" id="modeBadge">
+        <span class="modeDot" id="modeDot"></span>
+        <span id="modeText">mode</span>
+      </span>
+
+      <button class="ghost" id="btnReset">reset</button>
+      <button class="ghost" id="btnSave">save</button>
+      <button class="ghost" id="btnLoad">load</button>
+      <button class="ghost" id="btnExportImageMap">export image map</button>
+      <button class="ghost" id="btnExcel">excel download</button>
+      <button class="primary" id="btnPrint">pdf print</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="appRoot">
+  <div class="grid">
+    <section class="card">
+      <div class="hd">
+        <p class="kicker">form</p>
+        <h2 id="stepTitle">start</h2>
+      </div>
+
+      <div class="bd" id="stepBody"></div>
+      <div class="stepper" id="stepper"></div>
+
+      <div class="footer-actions">
+        <div class="left">
+          <button id="btnPrev">prev</button>
+          <button id="btnNext" class="primary">next</button>
+        </div>
+        <div class="right"></div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <div class="hd">
+        <h2 class="summaryTitleCaps">TILTED HANNAM</h2>
+      </div>
+      <div class="bd">
+        <div class="summaryBlock" id="liveSummary"></div>
+
+        <div class="hr"></div>
+        <div class="note">
+          <b>mode</b><br/>
+          customer: no image edit buttons.<br/>
+          admin: open with <b>?admin=1</b> to connect image urls.<br/>
+          production: shared images come from <b>admin_option_image_map.json</b>.
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<section id="pdfSheet">
+  <div class="pdfTitle">TILTED HANNAM · BESPOKE SELECTIONS</div>
+  <div class="pdfSub"></div>
+
+  <div class="pdfBox">
+    <h3>Basic</h3>
+    <div class="pdfRow"><span class="pdfK">wedding date</span><span class="pdfV" id="pdf_date">-</span></div>
+    <div class="pdfRow"><span class="pdfK">time</span><span class="pdfV" id="pdf_time">-</span></div>
+    <div class="pdfRow"><span class="pdfK">groom l bride</span><span class="pdfV" id="pdf_couple">-</span></div>
+  </div>
+
+  <div class="pdfBox">
+    <h3>Selections</h3>
+    <div id="pdf_selections"></div>
+  </div>
+
+  <div class="pdfBox">
+    <h3>Request</h3>
+    <div id="pdf_request" style="font-size:12px; line-height:1.6;">-</div>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const IS_ADMIN = params.get("admin") === "1";
+  document.body.classList.add(IS_ADMIN ? "admin-mode" : "customer-mode");
+
+  // shared image map loaded from external JSON file
+  let REMOTE_OPTION_IMAGE_MAP = {};
+  let ADMIN_RUNTIME_IMAGE_MAP = {};
+
+  async function loadRemoteImageMap(){
+    try{
+      const res = await fetch("./admin_option_image_map.json", { cache: "no-store" });
+      if(!res.ok) throw new Error("json load failed");
+      const data = await res.json();
+      if(data && typeof data === "object" && !Array.isArray(data)){
+        REMOTE_OPTION_IMAGE_MAP = data;
+      }
+    }catch(e){
+      REMOTE_OPTION_IMAGE_MAP = {};
+      console.warn("admin_option_image_map.json not loaded", e);
+    }
+  }
+
+  (function initModeBadge(){
+    const dot = document.getElementById("modeDot");
+    const txt = document.getElementById("modeText");
+    if(IS_ADMIN){
+      dot.classList.add("admin");
+      txt.textContent = "admin (?admin=1)";
+    }else{
+      dot.classList.add("customer");
+      txt.textContent = "customer";
+    }
+  })();
+
+  const ADMIN_OPTION_IMAGE_MAP = {}; // legacy fallback
+  const byId = (id) => document.getElementById(id);
+  const storageKey = "tilted_hn_bespoke_direction_v8";
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function validateImageUrl(url){
+    return /^https?:\/\//i.test(String(url || "").trim());
+  }
+
+  function downloadTextFile(filename, text, mime="application/json"){
+    const blob = new Blob([text], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function scrollToTop(){
+    const header = document.getElementById("siteHeader");
+    const headerH = header ? Math.ceil(header.getBoundingClientRect().height) : 0;
+    const scroller = document.scrollingElement || document.documentElement || document.body;
+
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+
+    requestAnimationFrame(() => {
+      try { scroller.scrollTo({ top: 0, left: 0, behavior: "auto" }); }
+      catch(e) { scroller.scrollTop = 0; }
+      if(headerH){
+        window.scrollBy({ top: -headerH, left: 0, behavior: "auto" });
+      }
+    });
+  }
+
+  const FIXED_13 = "w/ music director";
+  const FIXED_14 = "w/ flower director";
+  const FIXED_15 = "w/ operations manager";
+
+  function getArchPlacementSymbol(v){
+    if(v === "a") return "ㅡ";
+    if(v === "b") return "( )";
+    if(v === "c") return "ground";
+    if(v === "d") return "∩";
+    return "-";
+  }
+
+  function getGardenRoadArrow(v){
+    if(v === "left") return "←";
+    if(v === "up-left") return "↖";
+    if(v === "up") return "↑";
+    if(v === "up-right") return "↗";
+    return "-";
+  }
+
+  function asDisplay(v){
+    if(Array.isArray(v)){
+      const cleaned = v.filter(x => String(x || "").trim());
+      return cleaned.length ? cleaned.join(" / ") : "-";
+    }
+    return (v && String(v).trim()) ? v : "-";
+  }
+
+  function toggleMulti(stateKey, val){
+    const cur = state[stateKey];
+    const arr = Array.isArray(cur) ? cur.slice() : [];
+    const i = arr.indexOf(val);
+    if(i >= 0) arr.splice(i, 1);
+    else arr.push(val);
+    state[stateKey] = arr;
+  }
+
+  const state = {
+    weddingDate: "",
+    mealTime: "lunch",
+    groomName: "",
+    brideName: "",
+    gardenRoadDir: "",
+    virginType: "",
+    whiteRoad: "",
+    flowerRoad: "",
+    archPlacement: "",
+    archFabricType: "",
+    fabricColor: [],
+    gardenTableShape: "",
+    tableDeco: [],
+    candleColor: [],
+    chairFabricColor: [],
+    bouquet: "",
+    bouquetComposition: "",
+    eventTicket: "",
+    requestNote: "",
+    optionImages: {},
+    lastStep: 0
+  };
+
+  function getTimeLabel(){
+    if(state.mealTime === "lunch") return "12pm l 10:30 - 13:30";
+    if(state.mealTime === "dinner") return "6pm l 16:30 - 19:30";
+    return "-";
+  }
+
+  function getCoupleLabel(){
+    return `${state.groomName || "-"} l ${state.brideName || "-"}`;
+  }
+
+  const steps = [
+    { key: "start", title: "start" },
+    { key: "garden_road_dir", title: "1) road direction" },
+    { key: "road_type", title: "2) road type" },
+    { key: "white_satin", title: "3) white satin road" },
+    { key: "flower_road", title: "4) flower road" },
+    { key: "arch_type", title: "5) arch type" },
+    { key: "arch_fabric_type", title: "6) arch fabric type" },
+    { key: "color", title: "7) arch fabric color" },
+    { key: "garden_shape", title: "8) table type (garden)" },
+    { key: "table_deco", title: "9) table fabric (square table)" },
+    { key: "candle_color", title: "10) candle color" },
+    { key: "chair_color", title: "11) chair fabric (garden)" },
+    { key: "bouquet", title: "12) bouquet" },
+    { key: "ticket", title: "13) event ticket" },
+    { key: "request_note", title: "request" },
+  ];
+
+  let currentStep = 0;
+
+  function renderTextInput({ label, stateKey, type="text", placeholder="", note="" }){
+    const q = document.createElement("div");
+    q.className = "q noMb";
+    q.innerHTML = `
+      <div class="qtitle">
+        <strong>${label}</strong>
+        ${note ? `<span>${note}</span>` : `<span></span>`}
+      </div>
+      <input type="${type}" placeholder="${placeholder}" value="${escapeHtml(state[stateKey] ?? "")}">
+    `;
+    q.querySelector("input").addEventListener("input", (e) => {
+      state[stateKey] = e.target.value;
+      updateLiveSummary();
+    });
+    return q;
+  }
+
+  function renderTextarea({ label, stateKey, placeholder="", note="" }){
+    const q = document.createElement("div");
+    q.className = "q noMb";
+    q.innerHTML = `
+      <div class="qtitle">
+        <strong>${label}</strong>
+        ${note ? `<span>${note}</span>` : `<span></span>`}
+      </div>
+      <textarea placeholder="${placeholder}">${escapeHtml(state[stateKey] ?? "")}</textarea>
+    `;
+    q.querySelector("textarea").addEventListener("input", (e) => {
+      state[stateKey] = e.target.value;
+      updateLiveSummary();
+    });
+    return q;
+  }
+
+  function optImgKey(stateKey, val){
+    return `${stateKey}|${val}`;
+  }
+
+  function getOptionImageSrc(k){
+    return ADMIN_RUNTIME_IMAGE_MAP[k] || REMOTE_OPTION_IMAGE_MAP[k] || ADMIN_OPTION_IMAGE_MAP[k] || "";
+  }
+
+  function renderOptionImageGrid({ title, hintRight="", stateKey, value, options, multi=false }){
+    const q = document.createElement("div");
+    q.className = "q noMb";
+    q.innerHTML = `
+      <div class="qtitle">
+        <strong>${escapeHtml(title)}</strong>
+        <span>${escapeHtml(hintRight || "")}</span>
+      </div>
+    `;
+
+    const grid = document.createElement("div");
+    grid.className = "optGrid";
+
+    options.forEach((o) => {
+      const isActive = multi
+        ? (Array.isArray(value) && value.includes(o.val))
+        : (value === o.val);
+
+      const card = document.createElement("div");
+      card.className = "optCard" + (isActive ? " active" : "");
+      card.setAttribute("role", "button");
+
+      const head = document.createElement("div");
+      head.className = "optHead";
+      head.innerHTML = `
+        <div class="label"><div>${escapeHtml(o.tag || "")}</div></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div class="radioDot" aria-hidden="true"></div>
+          <div class="hint">${escapeHtml(o.hint || "")}</div>
+        </div>
+      `;
+
+      const canvas = document.createElement("div");
+      canvas.className = "optCanvas";
+
+      const k = optImgKey(stateKey, o.val);
+      const src = getOptionImageSrc(k);
+
+      if(src){
+        const img = document.createElement("img");
+        img.src = src;
+        canvas.appendChild(img);
+      } else {
+        const ph = document.createElement("div");
+        ph.className = "optPlaceholder";
+        ph.innerHTML = `<div>
+          <div style="font-weight:900;margin-bottom:6px;">image slot</div>
+          <div>connect image url in admin map</div>
+        </div>`;
+        canvas.appendChild(ph);
+      }
+
+      const tools = document.createElement("div");
+      tools.className = "optTools";
+
+      const urlInput = document.createElement("input");
+      urlInput.type = "text";
+      urlInput.placeholder = "image url";
+      urlInput.value = getOptionImageSrc(k);
+      urlInput.style.flex = "1 1 220px";
+      urlInput.addEventListener("click", (e) => e.stopPropagation());
+
+      const btnApply = document.createElement("button");
+      btnApply.className = "ghost";
+      btnApply.textContent = "apply url";
+      btnApply.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if(!IS_ADMIN) return;
+        const v = String(urlInput.value || "").trim();
+        if(!v){
+          delete ADMIN_RUNTIME_IMAGE_MAP[k];
+          loadRemoteImageMap().finally(render);
+          return;
+        }
+        ADMIN_RUNTIME_IMAGE_MAP[k] = v;
+        render();
+      });
+
+      const btnDel = document.createElement("button");
+      btnDel.className = "ghost";
+      btnDel.textContent = "delete";
+      btnDel.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if(!IS_ADMIN) return;
+        delete ADMIN_RUNTIME_IMAGE_MAP[k];
+        render();
+      });
+
+      tools.appendChild(urlInput);
+      tools.appendChild(btnApply);
+      tools.appendChild(btnDel);
+
+      card.addEventListener("click", () => {
+        if(multi){
+          toggleMulti(stateKey, o.val);
+          render();
+          return;
+        }
+        state[stateKey] = o.val;
+        render();
+        scrollToTop();
+      });
+
+      card.appendChild(head);
+      card.appendChild(canvas);
+      card.appendChild(tools);
+      grid.appendChild(card);
+    });
+
+    q.appendChild(grid);
+    return q;
+  }
+
+  function renderStepper(){
+    const s = byId("stepper");
+    s.innerHTML = "";
+    steps.forEach((st, idx) => {
+      const pill = document.createElement("div");
+      pill.className = "pill" + (idx === currentStep ? " active" : "");
+      pill.textContent = st.title;
+      pill.addEventListener("click", () => {
+        currentStep = idx;
+        render();
+        scrollToTop();
+      });
+      s.appendChild(pill);
+    });
+  }
+
+  function setStepTitle(){
+    byId("stepTitle").textContent = steps[currentStep].title;
+  }
+
+  function renderStep(){
+    const body = byId("stepBody");
+    body.innerHTML = "";
+    const key = steps[currentStep].key;
+
+    if(key === "start"){
+      const left = document.createElement("div");
+      left.appendChild(renderTextInput({ label:"wedding date", stateKey:"weddingDate", type:"date" }));
+
+      const meal = document.createElement("div");
+      meal.className = "q noMb";
+      meal.innerHTML = `<div class="qtitle"><strong>lunch / dinner</strong><span></span></div>`;
+      const opt = document.createElement("div");
+      opt.className = "row";
+
+      const b1 = document.createElement("button");
+      b1.textContent = "lunch";
+      b1.className = (state.mealTime === "lunch") ? "primary" : "ghost";
+      b1.addEventListener("click", () => {
+        state.mealTime = "lunch";
+        render();
+        scrollToTop();
+      });
+
+      const b2 = document.createElement("button");
+      b2.textContent = "dinner";
+      b2.className = (state.mealTime === "dinner") ? "primary" : "ghost";
+      b2.addEventListener("click", () => {
+        state.mealTime = "dinner";
+        render();
+        scrollToTop();
+      });
+
+      opt.appendChild(b1);
+      opt.appendChild(b2);
+      meal.appendChild(opt);
+      left.appendChild(meal);
+
+      const names = document.createElement("div");
+      names.className = "q noMb";
+      names.innerHTML = `<div class="qtitle"><strong>names</strong><span></span></div>`;
+
+      const r = document.createElement("div");
+      r.className = "row";
+
+      const g = document.createElement("input");
+      g.type = "text";
+      g.placeholder = "groom";
+      g.value = state.groomName || "";
+      g.addEventListener("input", (e) => {
+        state.groomName = e.target.value;
+        updateLiveSummary();
+      });
+
+      const b = document.createElement("input");
+      b.type = "text";
+      b.placeholder = "bride";
+      b.value = state.brideName || "";
+      b.addEventListener("input", (e) => {
+        state.brideName = e.target.value;
+        updateLiveSummary();
+      });
+
+      r.appendChild(g);
+      r.appendChild(b);
+      names.appendChild(r);
+      left.appendChild(names);
+
+      const grid = document.createElement("div");
+      grid.style.display = "grid";
+      grid.style.gridTemplateColumns = "1fr";
+      grid.style.gap = "12px";
+      grid.appendChild(left);
+      body.appendChild(grid);
+      return;
+    }
+
+    if(key === "garden_road_dir"){
+      body.appendChild(renderOptionImageGrid({
+        title: "1) road direction",
+        hintRight: "select",
+        stateKey: "gardenRoadDir",
+        value: state.gardenRoadDir,
+        options: [
+          { tag:"←", val:"left" },
+          { tag:"↖", val:"up-left" },
+          { tag:"↑", val:"up" },
+          { tag:"↗", val:"up-right" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "road_type"){
+      body.appendChild(renderOptionImageGrid({
+        title: "2) road type",
+        hintRight: "select",
+        stateKey: "virginType",
+        value: state.virginType,
+        options: [
+          { tag:"ground", val:"ground" },
+          { tag:"rattan", val:"rattan" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "white_satin"){
+      body.appendChild(renderOptionImageGrid({
+        title: "3) white satin road",
+        hintRight: "o / x",
+        stateKey: "whiteRoad",
+        value: state.whiteRoad,
+        options: [
+          { tag:"o", val:"o" },
+          { tag:"x", val:"x" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "flower_road"){
+      body.appendChild(renderOptionImageGrid({
+        title: "4) flower road",
+        hintRight: "o / x",
+        stateKey: "flowerRoad",
+        value: state.flowerRoad,
+        options: [
+          { tag:"o", val:"o", hint:"+1,500,000" },
+          { tag:"x", val:"x" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "arch_type"){
+      body.appendChild(renderOptionImageGrid({
+        title: "5) arch type",
+        hintRight: "option image",
+        stateKey: "archPlacement",
+        value: state.archPlacement,
+        options: [
+          { tag:"ㅡ", val:"a" },
+          { tag:"( )", val:"b" },
+          { tag:"ground", val:"c" },
+          { tag:"∩", val:"d", hint:"*+1,500,000" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "arch_fabric_type"){
+      body.appendChild(renderOptionImageGrid({
+        title: "6) arch fabric type",
+        hintRight: "select",
+        stateKey: "archFabricType",
+        value: state.archFabricType,
+        options: [
+          { tag:"curtain", val:"curtain" },
+          { tag:"hanging", val:"hanging" },
+          { tag:"straight", val:"straight" },
+          { tag:"-", val:"-" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "color"){
+      body.appendChild(renderOptionImageGrid({
+        title: "7) arch fabric color",
+        hintRight: "multi select",
+        stateKey: "fabricColor",
+        value: state.fabricColor,
+        options: [
+          { tag:"cream", val:"cream" },
+          { tag:"pink", val:"pink" },
+          { tag:"white", val:"white" },
+          { tag:"green", val:"green" },
+          { tag:"blue", val:"blue" }
+        ],
+        multi:true
+      }));
+      return;
+    }
+
+    if(key === "garden_shape"){
+      body.appendChild(renderOptionImageGrid({
+        title: "8) table type (garden)",
+        hintRight: "select",
+        stateKey: "gardenTableShape",
+        value: state.gardenTableShape,
+        options: [
+          { tag:"o", val:"o", hint:"round" },
+          { tag:"ㅁ", val:"ㅁ", hint:"square" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "table_deco"){
+      body.appendChild(renderOptionImageGrid({
+        title: "9) table fabric (square table)",
+        hintRight: "multi select",
+        stateKey: "tableDeco",
+        value: state.tableDeco,
+        options: [
+          { tag:"cream", val:"cream" },
+          { tag:"pink", val:"pink" },
+          { tag:"green", val:"green" },
+          { tag:"purple", val:"purple" },
+          { tag:"burgundy", val:"burgundy" },
+          { tag:"black", val:"black" },
+          { tag:"white", val:"white" },
+          { tag:"blue", val:"blue" },
+          { tag:"-", val:"-" }
+        ],
+        multi:true
+      }));
+
+      const n = document.createElement("div");
+      n.className = "note";
+      n.textContent = "* applies to square tables (non-garden).";
+      body.appendChild(n);
+      return;
+    }
+
+    if(key === "candle_color"){
+      body.appendChild(renderOptionImageGrid({
+        title: "10) candle color",
+        hintRight: "multi select",
+        stateKey: "candleColor",
+        value: state.candleColor,
+        options: [
+          { tag:"cream", val:"cream" },
+          { tag:"pink", val:"pink" },
+          { tag:"green", val:"green" },
+          { tag:"purple", val:"purple" },
+          { tag:"yellow", val:"yellow" },
+          { tag:"black", val:"black" },
+          { tag:"white", val:"white" },
+          { tag:"orange", val:"orange" },
+          { tag:"mint", val:"mint" },
+          { tag:"blue", val:"blue" },
+          { tag:"-", val:"-" }
+        ],
+        multi:true
+      }));
+
+      const n = document.createElement("div");
+      n.className = "note";
+      n.textContent = "* candle is not lit for safety.";
+      body.appendChild(n);
+      return;
+    }
+
+    if(key === "chair_color"){
+      body.appendChild(renderOptionImageGrid({
+        title: "11) chair fabric (garden)",
+        hintRight: "multi select",
+        stateKey: "chairFabricColor",
+        value: state.chairFabricColor,
+        options: [
+          { tag:"cream", val:"cream" },
+          { tag:"pink", val:"pink" },
+          { tag:"green", val:"green" },
+          { tag:"purple", val:"purple" },
+          { tag:"burgundy", val:"burgundy" },
+          { tag:"black", val:"black" },
+          { tag:"white", val:"white" },
+          { tag:"blue", val:"blue" },
+          { tag:"-", val:"-" }
+        ],
+        multi:true
+      }));
+      return;
+    }
+
+    if(key === "bouquet"){
+      body.appendChild(renderOptionImageGrid({
+        title: "12) bouquet",
+        hintRight: "o / x",
+        stateKey: "bouquet",
+        value: state.bouquet,
+        options: [
+          { tag:"o", val:"o", hint:"+450,000" },
+          { tag:"x", val:"x" }
+        ],
+        multi:false
+      }));
+
+      if(state.bouquet === "o"){
+        body.appendChild(renderTextarea({
+          label:"bouquet composition",
+          stateKey:"bouquetComposition",
+          placeholder:"write bouquet composition (english)"
+        }));
+      }
+      return;
+    }
+
+    if(key === "ticket"){
+      body.appendChild(renderOptionImageGrid({
+        title: "13) event ticket",
+        hintRight: "o / x",
+        stateKey: "eventTicket",
+        value: state.eventTicket,
+        options: [
+          { tag:"o", val:"o" },
+          { tag:"x", val:"x" }
+        ],
+        multi:false
+      }));
+      return;
+    }
+
+    if(key === "request_note"){
+      body.appendChild(renderTextarea({
+        label: "request",
+        stateKey: "requestNote",
+        placeholder: "write additional request"
+      }));
+      return;
+    }
+  }
+
+  function updateLiveSummary(){
+    const el = byId("liveSummary");
+    if(!el) return;
+
+    const coupleLine = `${escapeHtml(state.groomName || "-")} l ${escapeHtml(state.brideName || "-")}`;
+    const timeLine = getTimeLabel();
+
+    el.innerHTML = `
+      <div class="tag muted"><b>date</b>: ${escapeHtml(state.weddingDate || "-")}</div>
+      <div class="tag muted"><b>time</b>: ${escapeHtml(timeLine)}</div>
+      <div class="tag muted"><b>groom l bride</b>: ${coupleLine}</div>
+
+      <div class="hr"></div>
+
+      <div class="tag muted"><b>1) road direction</b>: ${escapeHtml(getGardenRoadArrow(state.gardenRoadDir))}</div>
+      <div class="tag muted"><b>2) road type</b>: ${escapeHtml(asDisplay(state.virginType))}</div>
+      <div class="tag muted"><b>3) white satin road</b>: ${escapeHtml(asDisplay(state.whiteRoad))}</div>
+      <div class="tag muted"><b>4) flower road</b>: ${escapeHtml(asDisplay(state.flowerRoad))}</div>
+
+      <div class="tag muted"><b>5) arch type</b>: ${escapeHtml(getArchPlacementSymbol(state.archPlacement))}</div>
+      <div class="tag muted"><b>6) arch fabric type</b>: ${escapeHtml(asDisplay(state.archFabricType))}</div>
+      <div class="tag muted"><b>7) arch fabric color</b>: ${escapeHtml(asDisplay(state.fabricColor))}</div>
+
+      <div class="tag muted"><b>8) table type (garden)</b>: ${escapeHtml(asDisplay(state.gardenTableShape))}</div>
+
+      <div class="tag muted"><b>9) table fabric (square table)</b>: ${escapeHtml(asDisplay(state.tableDeco))}</div>
+      <div class="tag muted"><b>10) candle color</b>: ${escapeHtml(asDisplay(state.candleColor))}</div>
+      <div class="tag muted"><b>11) chair fabric (garden)</b>: ${escapeHtml(asDisplay(state.chairFabricColor))}</div>
+
+      <div class="tag muted"><b>12) bouquet</b>: ${escapeHtml(asDisplay(state.bouquet))}</div>
+      ${state.bouquet === "o" ? `<div class="tag muted"><b>bouquet composition</b>: ${escapeHtml(asDisplay(state.bouquetComposition))}</div>` : ""}
+      <div class="tag muted"><b>13) event ticket</b>: ${escapeHtml(asDisplay(state.eventTicket))}</div>
+
+      <div class="hr"></div>
+
+      <div class="tag muted"><b>14) sound direction</b>: ${escapeHtml(FIXED_13)}</div>
+      <div class="tag muted"><b>15) flower direction</b>: ${escapeHtml(FIXED_14)}</div>
+      <div class="tag muted"><b>16) detailed inquiries</b>: ${escapeHtml(FIXED_15)}</div>
+
+      <div class="hr"></div>
+      <div style="
+        border:1px solid var(--line);
+        border-radius:12px;
+        padding:10px 12px;
+        background:#fff;
+        font-size:12px;
+        line-height:1.6;
+      ">
+        <b>request</b><br/>
+        ${escapeHtml(state.requestNote || "-")}
+      </div>
+    `;
+  }
+
+  function buildSelectionRows(){
+    return [
+      ["1) road direction", getGardenRoadArrow(state.gardenRoadDir)],
+      ["2) road type", asDisplay(state.virginType)],
+      ["3) white satin road", asDisplay(state.whiteRoad)],
+      ["4) flower road", asDisplay(state.flowerRoad)],
+      ["5) arch type", getArchPlacementSymbol(state.archPlacement)],
+      ["6) arch fabric type", asDisplay(state.archFabricType)],
+      ["7) arch fabric color", asDisplay(state.fabricColor)],
+      ["8) table type (garden)", asDisplay(state.gardenTableShape)],
+      ["9) table fabric (square table)", asDisplay(state.tableDeco)],
+      ["10) candle color", asDisplay(state.candleColor)],
+      ["11) chair fabric (garden)", asDisplay(state.chairFabricColor)],
+      ["12) bouquet", asDisplay(state.bouquet)],
+      ...(state.bouquet === "o" ? [["bouquet composition", asDisplay(state.bouquetComposition)]] : []),
+      ["13) event ticket", asDisplay(state.eventTicket)],
+      ["14) sound direction", FIXED_13],
+      ["15) flower direction", FIXED_14],
+      ["16) detailed inquiries", FIXED_15],
+    ];
+  }
+
+  function fillPDF(){
+    byId("pdf_date").textContent = state.weddingDate || "-";
+    byId("pdf_time").textContent = getTimeLabel();
+    byId("pdf_couple").textContent = `${state.groomName || "-"} l ${state.brideName || "-"}`;
+
+    const rows = buildSelectionRows();
+    byId("pdf_selections").innerHTML = rows.map(([k, v]) => `
+      <div class="pdfRow">
+        <span class="pdfK">${escapeHtml(k)}</span>
+        <span class="pdfV">${escapeHtml(asDisplay(v))}</span>
+      </div>
+    `).join("");
+
+    byId("pdf_request").textContent = state.requestNote || "-";
+  }
+
+  function buildExcelSheetData(){
+    const headers = [
+      "wedding date",
+      "time",
+      "groom l bride",
+      "1) road direction",
+      "2) road type",
+      "3) white satin road",
+      "4) flower road",
+      "5) arch type",
+      "6) arch fabric type",
+      "7) arch fabric color",
+      "8) table type (garden)",
+      "9) table fabric (square table)",
+      "10) candle color",
+      "11) chair fabric (garden)",
+      "12) bouquet",
+      "bouquet composition",
+      "13) event ticket",
+      "14) sound direction",
+      "15) flower direction",
+      "16) detailed inquiries",
+      "request"
+    ];
+
+    const values = [
+      state.weddingDate || "-",
+      getTimeLabel(),
+      getCoupleLabel(),
+      getGardenRoadArrow(state.gardenRoadDir),
+      asDisplay(state.virginType),
+      asDisplay(state.whiteRoad),
+      asDisplay(state.flowerRoad),
+      getArchPlacementSymbol(state.archPlacement),
+      asDisplay(state.archFabricType),
+      asDisplay(state.fabricColor),
+      asDisplay(state.gardenTableShape),
+      asDisplay(state.tableDeco),
+      asDisplay(state.candleColor),
+      asDisplay(state.chairFabricColor),
+      asDisplay(state.bouquet),
+      state.bouquet === "o" ? asDisplay(state.bouquetComposition) : "-",
+      asDisplay(state.eventTicket),
+      FIXED_13,
+      FIXED_14,
+      FIXED_15,
+      state.requestNote || "-"
+    ];
+
+    return [headers, values];
+  }
+
+  function downloadExcel(){
+    if(typeof XLSX === "undefined"){
+      alert("xlsx library not loaded.");
+      return;
+    }
+
+    const sheetData = buildExcelSheetData();
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+    ws["!cols"] = [
+      { wch: 16 },
+      { wch: 22 },
+      { wch: 24 },
+      { wch: 18 },
+      { wch: 16 },
+      { wch: 18 },
+      { wch: 16 },
+      { wch: 14 },
+      { wch: 18 },
+      { wch: 24 },
+      { wch: 20 },
+      { wch: 28 },
+      { wch: 20 },
+      { wch: 24 },
+      { wch: 14 },
+      { wch: 28 },
+      { wch: 16 },
+      { wch: 20 },
+      { wch: 20 },
+      { wch: 22 },
+      { wch: 40 }
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "Bespoke");
+
+    const fileDate = (state.weddingDate || "tilted_hannam").replaceAll(":", "-");
+    const filename = `TILTED_HANNAM_${fileDate}.xlsx`;
+
+    XLSX.writeFile(wb, filename);
+  }
+
+  function approxSizeInKB(str){
+    return Math.round((str.length * 2) / 1024);
+  }
+
+  function save(){
+    state.lastStep = currentStep;
+    state.optionImages = ADMIN_RUNTIME_IMAGE_MAP;
+    const payload = JSON.stringify(state);
+    const kb = approxSizeInKB(payload);
+    if(kb > 4600){
+      alert("save failed (too large: ~" + kb + "kb)\nuse image urls in admin map.");
+      return;
+    }
+    localStorage.setItem(storageKey, payload);
+    alert("saved!");
+  }
+
+  function load(){
+    const raw = localStorage.getItem(storageKey);
+    if(!raw){
+      alert("no saved data.");
+      return;
+    }
+
+    const parsed = JSON.parse(raw);
+    Object.assign(state, parsed);
+    ADMIN_RUNTIME_IMAGE_MAP = (parsed.optionImages && typeof parsed.optionImages === "object") ? parsed.optionImages : {};
+
+    if(typeof state.gardenRoadDir !== "string") state.gardenRoadDir = "";
+
+    ["fabricColor", "tableDeco", "candleColor", "chairFabricColor"].forEach((k) => {
+      if(!Array.isArray(state[k])){
+        state[k] = (state[k] && String(state[k]).trim()) ? [String(state[k])] : [];
+      }
+    });
+
+    currentStep = Number(state.lastStep || 0);
+    render();
+    alert("loaded!");
+  }
+
+  function resetAll(){
+    if(!confirm("reset all?")) return;
+    localStorage.removeItem(storageKey);
+    ADMIN_RUNTIME_IMAGE_MAP = {};
+    location.reload();
+  }
+
+  function goNext(){
+    if(currentStep < steps.length - 1){
+      currentStep++;
+      render();
+      scrollToTop();
+    }
+  }
+
+  function goPrev(){
+    if(currentStep > 0){
+      currentStep--;
+      render();
+      scrollToTop();
+    }
+  }
+
+
+  function exportImageMap(){
+    if(!IS_ADMIN){
+      alert("admin mode only");
+      return;
+    }
+    const cleaned = {};
+    Object.keys(ADMIN_RUNTIME_IMAGE_MAP).sort().forEach((k) => {
+      const v = String(ADMIN_RUNTIME_IMAGE_MAP[k] || "").trim();
+      if(validateImageUrl(v)) cleaned[k] = v;
+    });
+
+    if(!Object.keys(cleaned).length){
+      alert("no image urls to export.");
+      return;
+    }
+
+    downloadTextFile("admin_option_image_map.json", JSON.stringify(cleaned, null, 2));
+  }
+
+  function render(){
+    setStepTitle();
+    renderStepper();
+    renderStep();
+    updateLiveSummary();
+
+    byId("btnPrev").disabled = (currentStep === 0);
+    byId("btnNext").disabled = (currentStep === steps.length - 1);
+  }
+
+  byId("btnPrev").addEventListener("click", goPrev);
+  byId("btnNext").addEventListener("click", goNext);
+  byId("btnSave").addEventListener("click", save);
+  byId("btnLoad").addEventListener("click", load);
+  byId("btnReset").addEventListener("click", resetAll);
+  byId("btnExportImageMap").addEventListener("click", exportImageMap);
+  byId("btnExcel").addEventListener("click", downloadExcel);
+  byId("btnPrint").addEventListener("click", () => {
+    fillPDF();
+    window.print();
+  });
+
+  render();
+</script>
+</body>
+</html>
