@@ -554,6 +554,15 @@
       .replaceAll("'","&#039;");
   }
 
+
+  function normalizeDisplayImageUrl(url){
+    const raw = String(url || "").trim();
+    if(!raw) return "";
+    if(!/res\.cloudinary\.com/.test(raw)) return raw;
+    // Deliver a mobile-safe optimized image from Cloudinary.
+    return raw.replace("/image/upload/", "/image/upload/f_auto,q_auto,c_limit,w_1600/");
+  }
+
   function validateImageUrl(url){
     return /^https?:\/\//i.test(String(url || "").trim());
   }
@@ -755,7 +764,7 @@
       canvas.className = "optCanvas";
 
       const k = optImgKey(stateKey, o.val);
-      const src = getOptionImageSrc(k);
+      const src = normalizeDisplayImageUrl(getOptionImageSrc(k));
 
       if(src){
         const img = document.createElement("img");
