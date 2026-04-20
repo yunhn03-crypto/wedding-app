@@ -270,6 +270,12 @@
     }
     body.customer-mode .optTools{ display:none !important; }
 
+    body.customer-mode #btnSave,
+    body.customer-mode #btnLoad,
+    body.customer-mode #btnExportImageMap{
+      display:none !important;
+    }
+
     .summaryBlock{
       display:flex;
       flex-direction:column;
@@ -288,6 +294,13 @@
       max-width:100%;
     }
     .tag.muted{ color:var(--muted); }
+
+    .langSwitch{
+      display:flex;
+      gap:8px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
 
     @media (min-width: 921px){
       aside.card{
@@ -355,11 +368,41 @@
       text-align:right;
       white-space:pre-wrap;
     }
-body.customer-mode #btnSave,
-body.customer-mode #btnLoad,
-body.customer-mode #btnExportImageMap{
-  display: none !important;
-}
+    .pdfImageGrid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+    .pdfImageCard{
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      overflow:hidden;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      background:#fff;
+    }
+    .pdfImageThumb{
+      width:100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display:block;
+      background:#f5f5f5;
+    }
+    .pdfImageMeta{
+      padding:8px 10px;
+      border-top:1px solid #eee;
+    }
+    .pdfImageLabel{
+      font-size:11px;
+      font-weight:800;
+      margin-bottom:2px;
+    }
+    .pdfImageValue{
+      font-size:10px;
+      color:#555;
+      line-height:1.4;
+      word-break:break-word;
+    }
   </style>
 </head>
 <body>
@@ -416,6 +459,10 @@ body.customer-mode #btnExportImageMap{
         <h2 class="summaryTitleCaps">TILTED HANNAM</h2>
       </div>
       <div class="bd">
+        <div class="langSwitch">
+          <button id="btnLangEn" class="ghost" type="button">En</button>
+          <button id="btnLangKo" class="ghost" type="button">Ko</button>
+        </div>
         <div class="summaryBlock" id="liveSummary"></div>
 
         <div class="hr"></div>
@@ -444,6 +491,11 @@ body.customer-mode #btnExportImageMap{
   <div class="pdfBox">
     <h3>Selections</h3>
     <div id="pdf_selections"></div>
+  </div>
+
+  <div class="pdfBox" id="pdf_images_box" style="display:none;">
+    <h3>Selected Option Images</h3>
+    <div id="pdf_images" class="pdfImageGrid"></div>
   </div>
 
   <div class="pdfBox">
@@ -604,6 +656,183 @@ body.customer-mode #btnExportImageMap{
   const FIXED_14 = "w/ flower director";
   const FIXED_15 = "w/ operations manager";
 
+  const I18N = {
+    en: {
+      date: "date",
+      time: "time",
+      couple: "groom l bride",
+      request: "request",
+      roadDirection: "1) road direction",
+      roadType: "2) road type",
+      whiteSatinRoad: "3) white satin road",
+      flowerRoad: "4) flower road",
+      archType: "5) arch type",
+      archFabricType: "6) arch fabric type",
+      archFabricColor: "7) arch fabric color",
+      tableTypeGarden: "8) table type (garden)",
+      tableFabricSquare: "9) table fabric (square table)",
+      candleColor: "10) candle color",
+      chairFabricGarden: "11) chair fabric (garden)",
+      bouquet: "12) bouquet",
+      bouquetComposition: "bouquet composition",
+      eventTicket: "13) event ticket",
+      soundDirection: "14) sound direction",
+      flowerDirection: "15) flower direction",
+      detailedInquiries: "16) detailed inquiries",
+      lunch: "12pm l 10:30 - 13:30",
+      dinner: "6pm l 16:30 - 19:30",
+      values: {
+        ground: "ground",
+        rattan: "rattan",
+        curtain: "curtain",
+        hanging: "hanging",
+        straight: "straight",
+        cream: "cream",
+        pink: "pink",
+        white: "white",
+        green: "green",
+        blue: "blue",
+        purple: "purple",
+        burgundy: "burgundy",
+        black: "black",
+        yellow: "yellow",
+        orange: "orange",
+        mint: "mint",
+        lunch: "lunch",
+        dinner: "dinner"
+      }
+    },
+    ko: {
+      date: "예식일",
+      time: "시간",
+      couple: "신랑 l 신부",
+      request: "요청사항",
+      roadDirection: "1) 로드 방향",
+      roadType: "2) 로드 타입",
+      whiteSatinRoad: "3) 화이트 새틴 로드",
+      flowerRoad: "4) 플라워 로드",
+      archType: "5) 아치 타입",
+      archFabricType: "6) 아치 패브릭 타입",
+      archFabricColor: "7) 아치 패브릭 컬러",
+      tableTypeGarden: "8) 테이블 타입 (가든)",
+      tableFabricSquare: "9) 테이블 패브릭 (스퀘어 테이블)",
+      candleColor: "10) 캔들 컬러",
+      chairFabricGarden: "11) 의자 패브릭 (가든)",
+      bouquet: "12) 부케",
+      bouquetComposition: "부케 구성",
+      eventTicket: "13) 이벤트 티켓",
+      soundDirection: "14) 사운드 디렉션",
+      flowerDirection: "15) 플라워 디렉션",
+      detailedInquiries: "16) 상세 문의",
+      lunch: "낮 12시 l 10:30 - 13:30",
+      dinner: "저녁 6시 l 16:30 - 19:30",
+      values: {
+        ground: "그라운드",
+        rattan: "라탄",
+        curtain: "커튼",
+        hanging: "행잉",
+        straight: "스트레이트",
+        cream: "크림",
+        pink: "핑크",
+        white: "화이트",
+        green: "그린",
+        blue: "블루",
+        purple: "퍼플",
+        burgundy: "버건디",
+        black: "블랙",
+        yellow: "옐로우",
+        orange: "오렌지",
+        mint: "민트",
+        lunch: "런치",
+        dinner: "디너"
+      }
+    }
+  };
+
+  function getLangPack(){
+    return I18N[state.uiLang] || I18N.en;
+  }
+
+  function translateSingleValue(v){
+    const lang = getLangPack();
+    const raw = String(v ?? "").trim();
+    if(!raw) return "-";
+    if(raw === "-") return "-";
+    if(raw === "o") return raw;
+    if(raw === "x") return raw;
+    return (lang.values && lang.values[raw]) || raw;
+  }
+
+  function translateDisplay(v){
+    if(Array.isArray(v)){
+      const cleaned = v.filter(x => String(x || "").trim());
+      return cleaned.length ? cleaned.map(translateSingleValue).join(" / ") : "-";
+    }
+    return translateSingleValue(v);
+  }
+
+  function getSummaryTimeLabel(){
+    const lang = getLangPack();
+    if(state.mealTime === "lunch") return lang.lunch;
+    if(state.mealTime === "dinner") return lang.dinner;
+    return "-";
+  }
+
+  function getStepTitleByKey(key){
+    const lang = getLangPack();
+    const map = {
+      start: state.uiLang === "ko" ? "시작" : "start",
+      garden_road_dir: lang.roadDirection,
+      road_type: lang.roadType,
+      white_satin: lang.whiteSatinRoad,
+      flower_road: lang.flowerRoad,
+      arch_type: lang.archType,
+      arch_fabric_type: lang.archFabricType,
+      color: lang.archFabricColor,
+      garden_shape: lang.tableTypeGarden,
+      table_deco: lang.tableFabricSquare,
+      candle_color: lang.candleColor,
+      chair_color: lang.chairFabricGarden,
+      bouquet: lang.bouquet,
+      ticket: lang.eventTicket,
+      request_note: lang.request
+    };
+    return map[key] || key;
+  }
+
+  function getStepDisplayTitle(step){
+    if(!step) return "";
+    return getStepTitleByKey(step.key);
+  }
+
+  function getFormKicker(){ return state.uiLang === "ko" ? "폼" : "form"; }
+  function getSelectText(){ return state.uiLang === "ko" ? "선택" : "select"; }
+  function getMultiSelectText(){ return state.uiLang === "ko" ? "복수 선택" : "multi select"; }
+  function getOptionImageText(){ return state.uiLang === "ko" ? "옵션 이미지" : "option image"; }
+  function getOXText(){ return "o / x"; }
+  function getPlaceholderImageSlotTitle(){ return state.uiLang === "ko" ? "이미지 슬롯" : "image slot"; }
+  function getPlaceholderImageSlotDesc(){ return state.uiLang === "ko" ? "관리자 맵에 이미지 url 연결" : "connect image url in admin map"; }
+  function getStepNoteSquareTable(){ return state.uiLang === "ko" ? "* 스퀘어 테이블(논가든)에 적용됩니다." : "* applies to square tables (non-garden)."; }
+  function getStepNoteCandle(){ return state.uiLang === "ko" ? "* 안전상 캔들 점화는 하지 않습니다." : "* candle is not lit for safety."; }
+  function getBouquetPlaceholder(){ return state.uiLang === "ko" ? "부케 구성을 작성하세요 (영문)" : "write bouquet composition (english)"; }
+  function getRequestPlaceholder(){ return state.uiLang === "ko" ? "추가 요청사항을 작성하세요" : "write additional request"; }
+  function getNamesTitle(){ return state.uiLang === "ko" ? "이름" : "names"; }
+  function getLunchDinnerTitle(){ return state.uiLang === "ko" ? "런치 / 디너" : "lunch / dinner"; }
+  function getWeddingDateLabel(){ return state.uiLang === "ko" ? "예식일" : "wedding date"; }
+  function getGroomPlaceholder(){ return state.uiLang === "ko" ? "신랑" : "groom"; }
+  function getBridePlaceholder(){ return state.uiLang === "ko" ? "신부" : "bride"; }
+  function getLunchLabel(){ return state.uiLang === "ko" ? "런치" : "lunch"; }
+  function getDinnerLabel(){ return state.uiLang === "ko" ? "디너" : "dinner"; }
+  function translateHintValue(v){
+    const raw = String(v ?? "").trim();
+    if(!raw) return "";
+    if(state.uiLang === "ko"){
+      if(raw === "round") return "원형";
+      if(raw === "square") return "사각";
+    }
+    return raw;
+  }
+
   function getArchPlacementSymbol(v){
     if(v === "a") return "ㅡ";
     if(v === "b") return "( )";
@@ -658,6 +887,7 @@ body.customer-mode #btnExportImageMap{
     eventTicket: "",
     requestNote: "",
     optionImages: {},
+    uiLang: "en",
     lastStep: 0
   };
 
@@ -758,10 +988,10 @@ body.customer-mode #btnExportImageMap{
       const head = document.createElement("div");
       head.className = "optHead";
       head.innerHTML = `
-        <div class="label"><div>${escapeHtml(o.tag || "")}</div></div>
+        <div class="label"><div>${escapeHtml(translateSingleValue(o.tag || ""))}</div></div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
           <div class="radioDot" aria-hidden="true"></div>
-          <div class="hint">${escapeHtml(o.hint || "")}</div>
+          <div class="hint">${escapeHtml(translateHintValue(o.hint || ""))}</div>
         </div>
       `;
 
@@ -779,8 +1009,8 @@ body.customer-mode #btnExportImageMap{
         const ph = document.createElement("div");
         ph.className = "optPlaceholder";
         ph.innerHTML = `<div>
-          <div style="font-weight:900;margin-bottom:6px;">image slot</div>
-          <div>connect image url in admin map</div>
+          <div style="font-weight:900;margin-bottom:6px;">${escapeHtml(getPlaceholderImageSlotTitle())}</div>
+          <div>${escapeHtml(getPlaceholderImageSlotDesc())}</div>
         </div>`;
         canvas.appendChild(ph);
       }
@@ -863,7 +1093,7 @@ body.customer-mode #btnExportImageMap{
     steps.forEach((st, idx) => {
       const pill = document.createElement("div");
       pill.className = "pill" + (idx === currentStep ? " active" : "");
-      pill.textContent = st.title;
+      pill.textContent = getStepDisplayTitle(st);
       pill.addEventListener("click", () => {
         currentStep = idx;
         render();
@@ -874,7 +1104,9 @@ body.customer-mode #btnExportImageMap{
   }
 
   function setStepTitle(){
-    byId("stepTitle").textContent = steps[currentStep].title;
+    byId("stepTitle").textContent = getStepDisplayTitle(steps[currentStep]);
+    const kicker = document.querySelector("section.card .hd .kicker");
+    if(kicker) kicker.textContent = getFormKicker();
   }
 
   function renderStep(){
@@ -884,16 +1116,16 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "start"){
       const left = document.createElement("div");
-      left.appendChild(renderTextInput({ label:"wedding date", stateKey:"weddingDate", type:"date" }));
+      left.appendChild(renderTextInput({ label:getWeddingDateLabel(), stateKey:"weddingDate", type:"date" }));
 
       const meal = document.createElement("div");
       meal.className = "q noMb";
-      meal.innerHTML = `<div class="qtitle"><strong>lunch / dinner</strong><span></span></div>`;
+      meal.innerHTML = `<div class="qtitle"><strong>${escapeHtml(getLunchDinnerTitle())}</strong><span></span></div>`;
       const opt = document.createElement("div");
       opt.className = "row";
 
       const b1 = document.createElement("button");
-      b1.textContent = "lunch";
+      b1.textContent = getLunchLabel();
       b1.className = (state.mealTime === "lunch") ? "primary" : "ghost";
       b1.addEventListener("click", () => {
         state.mealTime = "lunch";
@@ -902,7 +1134,7 @@ body.customer-mode #btnExportImageMap{
       });
 
       const b2 = document.createElement("button");
-      b2.textContent = "dinner";
+      b2.textContent = getDinnerLabel();
       b2.className = (state.mealTime === "dinner") ? "primary" : "ghost";
       b2.addEventListener("click", () => {
         state.mealTime = "dinner";
@@ -917,14 +1149,14 @@ body.customer-mode #btnExportImageMap{
 
       const names = document.createElement("div");
       names.className = "q noMb";
-      names.innerHTML = `<div class="qtitle"><strong>names</strong><span></span></div>`;
+      names.innerHTML = `<div class="qtitle"><strong>${escapeHtml(getNamesTitle())}</strong><span></span></div>`;
 
       const r = document.createElement("div");
       r.className = "row";
 
       const g = document.createElement("input");
       g.type = "text";
-      g.placeholder = "groom";
+      g.placeholder = getGroomPlaceholder();
       g.value = state.groomName || "";
       g.addEventListener("input", (e) => {
         state.groomName = e.target.value;
@@ -933,7 +1165,7 @@ body.customer-mode #btnExportImageMap{
 
       const b = document.createElement("input");
       b.type = "text";
-      b.placeholder = "bride";
+      b.placeholder = getBridePlaceholder();
       b.value = state.brideName || "";
       b.addEventListener("input", (e) => {
         state.brideName = e.target.value;
@@ -956,8 +1188,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "garden_road_dir"){
       body.appendChild(renderOptionImageGrid({
-        title: "1) road direction",
-        hintRight: "select",
+        title: getStepTitleByKey("garden_road_dir"),
+        hintRight: getSelectText(),
         stateKey: "gardenRoadDir",
         value: state.gardenRoadDir,
         options: [
@@ -973,8 +1205,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "road_type"){
       body.appendChild(renderOptionImageGrid({
-        title: "2) road type",
-        hintRight: "select",
+        title: getStepTitleByKey("road_type"),
+        hintRight: getSelectText(),
         stateKey: "virginType",
         value: state.virginType,
         options: [
@@ -988,8 +1220,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "white_satin"){
       body.appendChild(renderOptionImageGrid({
-        title: "3) white satin road",
-        hintRight: "o / x",
+        title: getStepTitleByKey("white_satin"),
+        hintRight: getOXText(),
         stateKey: "whiteRoad",
         value: state.whiteRoad,
         options: [
@@ -1003,8 +1235,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "flower_road"){
       body.appendChild(renderOptionImageGrid({
-        title: "4) flower road",
-        hintRight: "o / x",
+        title: getStepTitleByKey("flower_road"),
+        hintRight: getOXText(),
         stateKey: "flowerRoad",
         value: state.flowerRoad,
         options: [
@@ -1018,8 +1250,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "arch_type"){
       body.appendChild(renderOptionImageGrid({
-        title: "5) arch type",
-        hintRight: "option image",
+        title: getStepTitleByKey("arch_type"),
+        hintRight: getOptionImageText(),
         stateKey: "archPlacement",
         value: state.archPlacement,
         options: [
@@ -1035,8 +1267,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "arch_fabric_type"){
       body.appendChild(renderOptionImageGrid({
-        title: "6) arch fabric type",
-        hintRight: "select",
+        title: getStepTitleByKey("arch_fabric_type"),
+        hintRight: getSelectText(),
         stateKey: "archFabricType",
         value: state.archFabricType,
         options: [
@@ -1052,8 +1284,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "color"){
       body.appendChild(renderOptionImageGrid({
-        title: "7) arch fabric color",
-        hintRight: "multi select",
+        title: getStepTitleByKey("color"),
+        hintRight: getMultiSelectText(),
         stateKey: "fabricColor",
         value: state.fabricColor,
         options: [
@@ -1070,8 +1302,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "garden_shape"){
       body.appendChild(renderOptionImageGrid({
-        title: "8) table type (garden)",
-        hintRight: "select",
+        title: getStepTitleByKey("garden_shape"),
+        hintRight: getSelectText(),
         stateKey: "gardenTableShape",
         value: state.gardenTableShape,
         options: [
@@ -1085,8 +1317,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "table_deco"){
       body.appendChild(renderOptionImageGrid({
-        title: "9) table fabric (square table)",
-        hintRight: "multi select",
+        title: getStepTitleByKey("table_deco"),
+        hintRight: getMultiSelectText(),
         stateKey: "tableDeco",
         value: state.tableDeco,
         options: [
@@ -1105,15 +1337,15 @@ body.customer-mode #btnExportImageMap{
 
       const n = document.createElement("div");
       n.className = "note";
-      n.textContent = "* applies to square tables (non-garden).";
+      n.textContent = getStepNoteSquareTable();
       body.appendChild(n);
       return;
     }
 
     if(key === "candle_color"){
       body.appendChild(renderOptionImageGrid({
-        title: "10) candle color",
-        hintRight: "multi select",
+        title: getStepTitleByKey("candle_color"),
+        hintRight: getMultiSelectText(),
         stateKey: "candleColor",
         value: state.candleColor,
         options: [
@@ -1134,15 +1366,15 @@ body.customer-mode #btnExportImageMap{
 
       const n = document.createElement("div");
       n.className = "note";
-      n.textContent = "* candle is not lit for safety.";
+      n.textContent = getStepNoteCandle();
       body.appendChild(n);
       return;
     }
 
     if(key === "chair_color"){
       body.appendChild(renderOptionImageGrid({
-        title: "11) chair fabric (garden)",
-        hintRight: "multi select",
+        title: getStepTitleByKey("chair_color"),
+        hintRight: getMultiSelectText(),
         stateKey: "chairFabricColor",
         value: state.chairFabricColor,
         options: [
@@ -1163,8 +1395,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "bouquet"){
       body.appendChild(renderOptionImageGrid({
-        title: "12) bouquet",
-        hintRight: "o / x",
+        title: getStepTitleByKey("bouquet"),
+        hintRight: getOXText(),
         stateKey: "bouquet",
         value: state.bouquet,
         options: [
@@ -1176,9 +1408,9 @@ body.customer-mode #btnExportImageMap{
 
       if(state.bouquet === "o"){
         body.appendChild(renderTextarea({
-          label:"bouquet composition",
+          label:getLangPack().bouquetComposition,
           stateKey:"bouquetComposition",
-          placeholder:"write bouquet composition (english)"
+          placeholder:getBouquetPlaceholder()
         }));
       }
       return;
@@ -1186,8 +1418,8 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "ticket"){
       body.appendChild(renderOptionImageGrid({
-        title: "13) event ticket",
-        hintRight: "o / x",
+        title: getStepTitleByKey("ticket"),
+        hintRight: getOXText(),
         stateKey: "eventTicket",
         value: state.eventTicket,
         options: [
@@ -1201,9 +1433,9 @@ body.customer-mode #btnExportImageMap{
 
     if(key === "request_note"){
       body.appendChild(renderTextarea({
-        label: "request",
+        label: getLangPack().request,
         stateKey: "requestNote",
-        placeholder: "write additional request"
+        placeholder: getRequestPlaceholder()
       }));
       return;
     }
@@ -1213,40 +1445,46 @@ body.customer-mode #btnExportImageMap{
     const el = byId("liveSummary");
     if(!el) return;
 
+    const lang = getLangPack();
     const coupleLine = `${escapeHtml(state.groomName || "-")} l ${escapeHtml(state.brideName || "-")}`;
-    const timeLine = getTimeLabel();
+    const timeLine = getSummaryTimeLabel();
+
+    const btnEn = byId("btnLangEn");
+    const btnKo = byId("btnLangKo");
+    if(btnEn) btnEn.className = state.uiLang === "en" ? "primary" : "ghost";
+    if(btnKo) btnKo.className = state.uiLang === "ko" ? "primary" : "ghost";
 
     el.innerHTML = `
-      <div class="tag muted"><b>date</b>: ${escapeHtml(state.weddingDate || "-")}</div>
-      <div class="tag muted"><b>time</b>: ${escapeHtml(timeLine)}</div>
-      <div class="tag muted"><b>groom l bride</b>: ${coupleLine}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.date)}</b>: ${escapeHtml(state.weddingDate || "-")}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.time)}</b>: ${escapeHtml(timeLine)}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.couple)}</b>: ${coupleLine}</div>
 
       <div class="hr"></div>
 
-      <div class="tag muted"><b>1) road direction</b>: ${escapeHtml(getGardenRoadArrow(state.gardenRoadDir))}</div>
-      <div class="tag muted"><b>2) road type</b>: ${escapeHtml(asDisplay(state.virginType))}</div>
-      <div class="tag muted"><b>3) white satin road</b>: ${escapeHtml(asDisplay(state.whiteRoad))}</div>
-      <div class="tag muted"><b>4) flower road</b>: ${escapeHtml(asDisplay(state.flowerRoad))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.roadDirection)}</b>: ${escapeHtml(getGardenRoadArrow(state.gardenRoadDir))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.roadType)}</b>: ${escapeHtml(translateDisplay(state.virginType))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.whiteSatinRoad)}</b>: ${escapeHtml(translateDisplay(state.whiteRoad))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.flowerRoad)}</b>: ${escapeHtml(translateDisplay(state.flowerRoad))}</div>
 
-      <div class="tag muted"><b>5) arch type</b>: ${escapeHtml(getArchPlacementSymbol(state.archPlacement))}</div>
-      <div class="tag muted"><b>6) arch fabric type</b>: ${escapeHtml(asDisplay(state.archFabricType))}</div>
-      <div class="tag muted"><b>7) arch fabric color</b>: ${escapeHtml(asDisplay(state.fabricColor))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.archType)}</b>: ${escapeHtml(getArchPlacementSymbol(state.archPlacement))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.archFabricType)}</b>: ${escapeHtml(translateDisplay(state.archFabricType))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.archFabricColor)}</b>: ${escapeHtml(translateDisplay(state.fabricColor))}</div>
 
-      <div class="tag muted"><b>8) table type (garden)</b>: ${escapeHtml(asDisplay(state.gardenTableShape))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.tableTypeGarden)}</b>: ${escapeHtml(translateDisplay(state.gardenTableShape))}</div>
 
-      <div class="tag muted"><b>9) table fabric (square table)</b>: ${escapeHtml(asDisplay(state.tableDeco))}</div>
-      <div class="tag muted"><b>10) candle color</b>: ${escapeHtml(asDisplay(state.candleColor))}</div>
-      <div class="tag muted"><b>11) chair fabric (garden)</b>: ${escapeHtml(asDisplay(state.chairFabricColor))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.tableFabricSquare)}</b>: ${escapeHtml(translateDisplay(state.tableDeco))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.candleColor)}</b>: ${escapeHtml(translateDisplay(state.candleColor))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.chairFabricGarden)}</b>: ${escapeHtml(translateDisplay(state.chairFabricColor))}</div>
 
-      <div class="tag muted"><b>12) bouquet</b>: ${escapeHtml(asDisplay(state.bouquet))}</div>
-      ${state.bouquet === "o" ? `<div class="tag muted"><b>bouquet composition</b>: ${escapeHtml(asDisplay(state.bouquetComposition))}</div>` : ""}
-      <div class="tag muted"><b>13) event ticket</b>: ${escapeHtml(asDisplay(state.eventTicket))}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.bouquet)}</b>: ${escapeHtml(translateDisplay(state.bouquet))}</div>
+      ${state.bouquet === "o" ? `<div class="tag muted"><b>${escapeHtml(lang.bouquetComposition)}</b>: ${escapeHtml(asDisplay(state.bouquetComposition))}</div>` : ""}
+      <div class="tag muted"><b>${escapeHtml(lang.eventTicket)}</b>: ${escapeHtml(translateDisplay(state.eventTicket))}</div>
 
       <div class="hr"></div>
 
-      <div class="tag muted"><b>14) sound direction</b>: ${escapeHtml(FIXED_13)}</div>
-      <div class="tag muted"><b>15) flower direction</b>: ${escapeHtml(FIXED_14)}</div>
-      <div class="tag muted"><b>16) detailed inquiries</b>: ${escapeHtml(FIXED_15)}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.soundDirection)}</b>: ${escapeHtml(FIXED_13)}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.flowerDirection)}</b>: ${escapeHtml(FIXED_14)}</div>
+      <div class="tag muted"><b>${escapeHtml(lang.detailedInquiries)}</b>: ${escapeHtml(FIXED_15)}</div>
 
       <div class="hr"></div>
       <div style="
@@ -1257,7 +1495,7 @@ body.customer-mode #btnExportImageMap{
         font-size:12px;
         line-height:1.6;
       ">
-        <b>request</b><br/>
+        <b>${escapeHtml(lang.request)}</b><br/>
         ${escapeHtml(state.requestNote || "-")}
       </div>
     `;
@@ -1285,6 +1523,79 @@ body.customer-mode #btnExportImageMap{
     ];
   }
 
+
+  function buildSelectedImageEntries(){
+    const entries = [];
+
+    const addSingle = (label, stateKey, selectedValue, displayValue) => {
+      const val = String(selectedValue || "").trim();
+      if(!val) return;
+      const src = normalizeDisplayImageUrl(getOptionImageSrc(optImgKey(stateKey, val)));
+      if(!src) return;
+      entries.push({ label, value: displayValue || val, src });
+    };
+
+    const addMulti = (label, stateKey, selectedValues) => {
+      const values = Array.isArray(selectedValues) ? selectedValues : [];
+      values.forEach((val) => {
+        const clean = String(val || "").trim();
+        if(!clean) return;
+        const src = normalizeDisplayImageUrl(getOptionImageSrc(optImgKey(stateKey, clean)));
+        if(!src) return;
+        entries.push({ label, value: clean, src });
+      });
+    };
+
+    addSingle("1) road direction", "gardenRoadDir", state.gardenRoadDir, getGardenRoadArrow(state.gardenRoadDir));
+    addSingle("2) road type", "virginType", state.virginType, asDisplay(state.virginType));
+    addSingle("3) white satin road", "whiteRoad", state.whiteRoad, asDisplay(state.whiteRoad));
+    addSingle("4) flower road", "flowerRoad", state.flowerRoad, asDisplay(state.flowerRoad));
+    addSingle("5) arch type", "archPlacement", state.archPlacement, getArchPlacementSymbol(state.archPlacement));
+    addSingle("6) arch fabric type", "archFabricType", state.archFabricType, asDisplay(state.archFabricType));
+    addMulti("7) arch fabric color", "fabricColor", state.fabricColor);
+    addSingle("8) table type (garden)", "gardenTableShape", state.gardenTableShape, asDisplay(state.gardenTableShape));
+    addMulti("9) table fabric (square table)", "tableDeco", state.tableDeco);
+    addMulti("10) candle color", "candleColor", state.candleColor);
+    addMulti("11) chair fabric (garden)", "chairFabricColor", state.chairFabricColor);
+    addSingle("12) bouquet", "bouquet", state.bouquet, asDisplay(state.bouquet));
+    addSingle("13) event ticket", "eventTicket", state.eventTicket, asDisplay(state.eventTicket));
+
+    return entries;
+  }
+
+  function waitForPdfImages(timeoutMs = 5000){
+    const imgs = Array.from(document.querySelectorAll("#pdf_images img"));
+    if(!imgs.length) return Promise.resolve();
+
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = () => {
+        if(done) return;
+        done = true;
+        resolve();
+      };
+
+      const pending = imgs.filter((img) => !img.complete);
+      if(!pending.length){
+        finish();
+        return;
+      }
+
+      let left = pending.length;
+      const onSettled = () => {
+        left -= 1;
+        if(left <= 0) finish();
+      };
+
+      pending.forEach((img) => {
+        img.addEventListener("load", onSettled, { once:true });
+        img.addEventListener("error", onSettled, { once:true });
+      });
+
+      setTimeout(finish, timeoutMs);
+    });
+  }
+
   function fillPDF(){
     byId("pdf_date").textContent = state.weddingDate || "-";
     byId("pdf_time").textContent = getTimeLabel();
@@ -1297,6 +1608,26 @@ body.customer-mode #btnExportImageMap{
         <span class="pdfV">${escapeHtml(asDisplay(v))}</span>
       </div>
     `).join("");
+
+    const imageEntries = buildSelectedImageEntries();
+    const pdfImagesBox = byId("pdf_images_box");
+    const pdfImages = byId("pdf_images");
+
+    if(imageEntries.length){
+      pdfImagesBox.style.display = "block";
+      pdfImages.innerHTML = imageEntries.map((item) => `
+        <div class="pdfImageCard">
+          <img class="pdfImageThumb" src="${escapeHtml(item.src)}" alt="${escapeHtml(item.label)}">
+          <div class="pdfImageMeta">
+            <div class="pdfImageLabel">${escapeHtml(item.label)}</div>
+            <div class="pdfImageValue">${escapeHtml(asDisplay(item.value))}</div>
+          </div>
+        </div>
+      `).join("");
+    }else{
+      pdfImagesBox.style.display = "none";
+      pdfImages.innerHTML = "";
+    }
 
     byId("pdf_request").textContent = state.requestNote || "-";
   }
@@ -1492,13 +1823,28 @@ body.customer-mode #btnExportImageMap{
 
   byId("btnPrev").addEventListener("click", goPrev);
   byId("btnNext").addEventListener("click", goNext);
+  const btnLangEn = byId("btnLangEn");
+  const btnLangKo = byId("btnLangKo");
+  if(btnLangEn){
+    btnLangEn.addEventListener("click", () => {
+      state.uiLang = "en";
+      render();
+    });
+  }
+  if(btnLangKo){
+    btnLangKo.addEventListener("click", () => {
+      state.uiLang = "ko";
+      render();
+    });
+  }
   byId("btnSave").addEventListener("click", save);
   byId("btnLoad").addEventListener("click", load);
   byId("btnReset").addEventListener("click", resetAll);
   byId("btnExportImageMap").addEventListener("click", exportImageMap);
   byId("btnExcel").addEventListener("click", downloadExcel);
-  byId("btnPrint").addEventListener("click", () => {
+  byId("btnPrint").addEventListener("click", async () => {
     fillPDF();
+    await waitForPdfImages();
     window.print();
   });
 
