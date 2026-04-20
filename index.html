@@ -296,10 +296,23 @@
     .tag.muted{ color:var(--muted); }
 
     .langSwitch{
-      display:flex;
-      gap:8px;
+      display:inline-flex;
+      gap:10px;
       margin-bottom:12px;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;
+      align-items:center;
+      justify-content:flex-start;
+      width:auto;
+    }
+
+    .langSwitch button{
+      flex:none;
+      width:auto;
+      min-width:56px;
+    }
+
+    .leftPanel{
+      min-width:0;
     }
 
     @media (min-width: 921px){
@@ -436,7 +449,13 @@
 
 <main class="wrap" id="appRoot">
   <div class="grid">
-    <section class="card">
+    <div class="leftPanel">
+      <div class="langSwitch" style="padding:0 0 12px 0;">
+        <button id="btnLangEn" class="ghost" type="button">En</button>
+        <button id="btnLangKo" class="ghost" type="button">Ko</button>
+      </div>
+
+      <section class="card">
       <div class="hd">
         <p class="kicker">form</p>
         <h2 id="stepTitle">start</h2>
@@ -453,16 +472,13 @@
         <div class="right"></div>
       </div>
     </section>
+    </div>
 
     <aside class="card">
       <div class="hd">
         <h2 class="summaryTitleCaps">TILTED HANNAM</h2>
       </div>
       <div class="bd">
-        <div class="langSwitch">
-          <button id="btnLangEn" class="ghost" type="button">En</button>
-          <button id="btnLangKo" class="ghost" type="button">Ko</button>
-        </div>
         <div class="summaryBlock" id="liveSummary"></div>
 
         <div class="hr"></div>
@@ -478,28 +494,28 @@
 </main>
 
 <section id="pdfSheet">
-  <div class="pdfTitle">TILTED HANNAM · BESPOKE SELECTIONS</div>
+  <div class="pdfTitle" id="pdf_title_main">TILTED HANNAM · BESPOKE SELECTIONS</div>
   <div class="pdfSub"></div>
 
   <div class="pdfBox">
-    <h3>Basic</h3>
-    <div class="pdfRow"><span class="pdfK">wedding date</span><span class="pdfV" id="pdf_date">-</span></div>
-    <div class="pdfRow"><span class="pdfK">time</span><span class="pdfV" id="pdf_time">-</span></div>
-    <div class="pdfRow"><span class="pdfK">groom l bride</span><span class="pdfV" id="pdf_couple">-</span></div>
+    <h3 id="pdf_basic_title">Basic</h3>
+    <div class="pdfRow"><span class="pdfK" id="pdf_label_date">wedding date</span><span class="pdfV" id="pdf_date">-</span></div>
+    <div class="pdfRow"><span class="pdfK" id="pdf_label_time">time</span><span class="pdfV" id="pdf_time">-</span></div>
+    <div class="pdfRow"><span class="pdfK" id="pdf_label_couple">groom l bride</span><span class="pdfV" id="pdf_couple">-</span></div>
   </div>
 
   <div class="pdfBox">
-    <h3>Selections</h3>
+    <h3 id="pdf_selections_title">Selections</h3>
     <div id="pdf_selections"></div>
   </div>
 
   <div class="pdfBox" id="pdf_images_box" style="display:none;">
-    <h3>Selected Option Images</h3>
+    <h3 id="pdf_images_title">Selected Option Images</h3>
     <div id="pdf_images" class="pdfImageGrid"></div>
   </div>
 
   <div class="pdfBox">
-    <h3>Request</h3>
+    <h3 id="pdf_request_title">Request</h3>
     <div id="pdf_request" style="font-size:12px; line-height:1.6;">-</div>
   </div>
 </section>
@@ -833,6 +849,49 @@
     return raw;
   }
 
+  function buildSelectionRowsForPdf(){
+    const lang = getLangPack();
+    return [
+      [lang.roadDirection, getGardenRoadArrow(state.gardenRoadDir)],
+      [lang.roadType, translateDisplay(state.virginType)],
+      [lang.whiteSatinRoad, translateDisplay(state.whiteRoad)],
+      [lang.flowerRoad, translateDisplay(state.flowerRoad)],
+      [lang.archType, getArchPlacementSymbol(state.archPlacement)],
+      [lang.archFabricType, translateDisplay(state.archFabricType)],
+      [lang.archFabricColor, translateDisplay(state.fabricColor)],
+      [lang.tableTypeGarden, translateDisplay(state.gardenTableShape)],
+      [lang.tableFabricSquare, translateDisplay(state.tableDeco)],
+      [lang.candleColor, translateDisplay(state.candleColor)],
+      [lang.chairFabricGarden, translateDisplay(state.chairFabricColor)],
+      [lang.bouquet, translateDisplay(state.bouquet)],
+      ...(state.bouquet === "o" ? [[lang.bouquetComposition, asDisplay(state.bouquetComposition)]] : []),
+      [lang.eventTicket, translateDisplay(state.eventTicket)],
+      [lang.soundDirection, FIXED_13],
+      [lang.flowerDirection, FIXED_14],
+      [lang.detailedInquiries, FIXED_15],
+    ];
+  }
+
+  function getPdfSectionTitleSelections(){
+    return state.uiLang === "ko" ? "선택 옵션" : "Selections";
+  }
+
+  function getPdfSectionTitleImages(){
+    return state.uiLang === "ko" ? "선택 옵션 이미지" : "Selected Option Images";
+  }
+
+  function getPdfSectionTitleRequest(){
+    return state.uiLang === "ko" ? "요청사항" : "Request";
+  }
+
+  function getPdfSectionTitleBasic(){
+    return state.uiLang === "ko" ? "기본 정보" : "Basic";
+  }
+
+  function getPdfTitle(){
+    return state.uiLang === "ko" ? "TILTED HANNAM · BESPOKE SELECTIONS" : "TILTED HANNAM · BESPOKE SELECTIONS";
+  }
+
   function getArchPlacementSymbol(v){
     if(v === "a") return "ㅡ";
     if(v === "b") return "( )";
@@ -966,12 +1025,6 @@
   function renderOptionImageGrid({ title, hintRight="", stateKey, value, options, multi=false }){
     const q = document.createElement("div");
     q.className = "q noMb";
-    q.innerHTML = `
-      <div class="qtitle">
-        <strong>${escapeHtml(title)}</strong>
-        <span>${escapeHtml(hintRight || "")}</span>
-      </div>
-    `;
 
     const grid = document.createElement("div");
     grid.className = "optGrid";
@@ -1546,19 +1599,21 @@
       });
     };
 
-    addSingle("1) road direction", "gardenRoadDir", state.gardenRoadDir, getGardenRoadArrow(state.gardenRoadDir));
-    addSingle("2) road type", "virginType", state.virginType, asDisplay(state.virginType));
-    addSingle("3) white satin road", "whiteRoad", state.whiteRoad, asDisplay(state.whiteRoad));
-    addSingle("4) flower road", "flowerRoad", state.flowerRoad, asDisplay(state.flowerRoad));
-    addSingle("5) arch type", "archPlacement", state.archPlacement, getArchPlacementSymbol(state.archPlacement));
-    addSingle("6) arch fabric type", "archFabricType", state.archFabricType, asDisplay(state.archFabricType));
-    addMulti("7) arch fabric color", "fabricColor", state.fabricColor);
-    addSingle("8) table type (garden)", "gardenTableShape", state.gardenTableShape, asDisplay(state.gardenTableShape));
-    addMulti("9) table fabric (square table)", "tableDeco", state.tableDeco);
-    addMulti("10) candle color", "candleColor", state.candleColor);
-    addMulti("11) chair fabric (garden)", "chairFabricColor", state.chairFabricColor);
-    addSingle("12) bouquet", "bouquet", state.bouquet, asDisplay(state.bouquet));
-    addSingle("13) event ticket", "eventTicket", state.eventTicket, asDisplay(state.eventTicket));
+    const lang = getLangPack();
+
+    addSingle(lang.roadDirection, "gardenRoadDir", state.gardenRoadDir, getGardenRoadArrow(state.gardenRoadDir));
+    addSingle(lang.roadType, "virginType", state.virginType, translateDisplay(state.virginType));
+    addSingle(lang.whiteSatinRoad, "whiteRoad", state.whiteRoad, translateDisplay(state.whiteRoad));
+    addSingle(lang.flowerRoad, "flowerRoad", state.flowerRoad, translateDisplay(state.flowerRoad));
+    addSingle(lang.archType, "archPlacement", state.archPlacement, getArchPlacementSymbol(state.archPlacement));
+    addSingle(lang.archFabricType, "archFabricType", state.archFabricType, translateDisplay(state.archFabricType));
+    addMulti(lang.archFabricColor, "fabricColor", state.fabricColor);
+    addSingle(lang.tableTypeGarden, "gardenTableShape", state.gardenTableShape, translateDisplay(state.gardenTableShape));
+    addMulti(lang.tableFabricSquare, "tableDeco", state.tableDeco);
+    addMulti(lang.candleColor, "candleColor", state.candleColor);
+    addMulti(lang.chairFabricGarden, "chairFabricColor", state.chairFabricColor);
+    addSingle(lang.bouquet, "bouquet", state.bouquet, translateDisplay(state.bouquet));
+    addSingle(lang.eventTicket, "eventTicket", state.eventTicket, translateDisplay(state.eventTicket));
 
     return entries;
   }
@@ -1597,11 +1652,23 @@
   }
 
   function fillPDF(){
+    const lang = getLangPack();
+
+    byId("pdf_title_main").textContent = getPdfTitle();
+    byId("pdf_basic_title").textContent = getPdfSectionTitleBasic();
+    byId("pdf_selections_title").textContent = getPdfSectionTitleSelections();
+    byId("pdf_images_title").textContent = getPdfSectionTitleImages();
+    byId("pdf_request_title").textContent = getPdfSectionTitleRequest();
+
+    byId("pdf_label_date").textContent = lang.date;
+    byId("pdf_label_time").textContent = lang.time;
+    byId("pdf_label_couple").textContent = lang.couple;
+
     byId("pdf_date").textContent = state.weddingDate || "-";
-    byId("pdf_time").textContent = getTimeLabel();
+    byId("pdf_time").textContent = getSummaryTimeLabel();
     byId("pdf_couple").textContent = `${state.groomName || "-"} l ${state.brideName || "-"}`;
 
-    const rows = buildSelectionRows();
+    const rows = buildSelectionRowsForPdf();
     byId("pdf_selections").innerHTML = rows.map(([k, v]) => `
       <div class="pdfRow">
         <span class="pdfK">${escapeHtml(k)}</span>
