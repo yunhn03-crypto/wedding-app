@@ -198,11 +198,18 @@
       display:flex;
       gap:10px;
       align-items:center;
-      flex-wrap:wrap;
-      min-width:0;
       font-weight:900;
       font-size:18px;
       text-transform:lowercase;
+    }
+    .optHead .label .inlineHint{
+      font-size:12px;
+      line-height:1.4;
+      font-weight:700;
+      color:var(--muted);
+      text-transform:none;
+      white-space:nowrap;
+      margin-left:2px;
     }
     .optHead .hint{
       color:var(--muted);
@@ -211,16 +218,6 @@
       text-align:right;
       min-width:120px;
       text-transform:lowercase;
-    }
-    .optHead .priceHint{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.4;
-      font-weight:500;
-      text-align:left;
-      min-width:0;
-      text-transform:none;
-      white-space:nowrap;
     }
     .radioDot{
       display:flex;
@@ -339,16 +336,40 @@
 
     #pdfSheet{ display:none; }
     @media print{
+      html, body{
+        height:auto !important;
+        overflow:visible !important;
+        background:#fff !important;
+      }
       header, main { display:none !important; }
-      #pdfSheet{ display:block !important; }
-      body{ background:#fff; }
+      #pdfSheet{
+        display:block !important;
+        overflow:visible !important;
+        break-inside:auto !important;
+        page-break-inside:auto !important;
+      }
+      #pdf_reference_box{
+        display:block !important;
+        visibility:visible !important;
+        overflow:visible !important;
+        page-break-before: always !important;
+        break-before: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      #pdf_images_box{
+        page-break-before: always !important;
+        break-before: page !important;
+      }
     }
 
     #pdfSheet{
       padding:14mm 12mm;
       font-family: system-ui,-apple-system,Apple SD Gothic Neo,Noto Sans KR,sans-serif;
       color:#111;
-      page-break-inside: avoid;
+      overflow:visible;
+      break-inside:auto;
+      page-break-inside:auto;
     }
     .pdfTitle{
       font-size:18px;
@@ -428,6 +449,125 @@
       line-height:1.4;
       word-break:break-word;
     }
+
+    .pdfReferenceContent{
+      font-size:11px;
+      line-height:1.5;
+      word-break:keep-all;
+      color:#111;
+    }
+    .pdfReferenceBlock{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:6px 0;
+      border-bottom:1px dashed #eee;
+      font-size:11px;
+    }
+    .pdfReferenceBlock:first-child{ padding-top:0; }
+    .pdfReferenceHeading{
+      margin:0;
+      min-width:78px;
+      max-width:95px;
+      color:#555;
+      font-size:11px;
+      line-height:1.5;
+    }
+    .pdfReferenceText{
+      margin:0;
+      flex:1;
+      white-space:pre-line;
+      color:#111;
+      font-size:11px;
+      line-height:1.5;
+    }
+    .pdfReferenceGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:8px;
+    }
+    .pdfReferenceList{
+      margin:0;
+      padding:0;
+      list-style:none;
+      border:1px solid #eee;
+      border-radius:10px;
+      overflow:hidden;
+      background:#fff;
+    }
+    .pdfReferenceList li{
+      margin:0;
+      padding:5px 8px;
+      border-bottom:1px dashed #eee;
+      color:#111;
+      font-size:11px;
+      line-height:1.45;
+      background:#fff;
+    }
+    .pdfReferenceList li:last-child{ border-bottom:none; }
+
+
+    .summaryReferenceBox{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      background:#fff;
+      color:#111;
+      font-size:12px;
+      line-height:1.6;
+    }
+    .summaryReferenceBox b{
+      display:block;
+      margin-bottom:6px;
+      color:#111;
+      font-size:12px;
+      font-weight:400;
+    }
+    .summaryReferenceBox .summaryRefSection{
+      padding:7px 0;
+      border-bottom:1px dashed var(--line);
+    }
+    .summaryReferenceBox .summaryRefSection:last-child{ border-bottom:none; padding-bottom:0; }
+    .summaryReferenceBox .summaryRefTitle{
+      color:#555;
+      font-size:12px;
+      margin-bottom:3px;
+    }
+    .summaryReferenceBox .summaryRefText{
+      color:#111;
+      font-size:12px;
+      white-space:pre-line;
+    }
+    .summaryReferenceBox ul{
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+    .summaryReferenceBox li{
+      padding:3px 0;
+      border-bottom:1px dashed var(--line);
+      color:#111;
+      font-size:12px;
+    }
+    .summaryReferenceBox li:last-child{ border-bottom:none; }
+    .pdfReferenceBox{
+      page-break-before:always !important;
+      break-before:page !important;
+      page-break-inside:avoid !important;
+      break-inside:avoid !important;
+      margin-bottom:0;
+    }
+    .pdfReferenceBox h3{
+      margin:0 0 10px;
+      color:#111;
+      font-size:13px;
+      font-weight:400;
+      text-transform:none;
+      letter-spacing:.2px;
+      text-align:center;
+    }
+
   </style>
 </head>
 <body>
@@ -493,7 +633,14 @@
       <div class="bd">
         <div class="summaryBlock" id="liveSummary"></div>
 
-          </div>
+        <div class="hr"></div>
+        <div class="note">
+          <b>mode</b><br/>
+          customer: no image edit buttons.<br/>
+          admin: open with <b>?admin=1</b>, then click <b>upload image</b> or connect image urls.<br/>
+          shared images come from <b>admin_option_image_map.json</b>.
+        </div>
+      </div>
     </aside>
   </div>
 </main>
@@ -514,15 +661,59 @@
     <div id="pdf_selections"></div>
   </div>
 
-  <div class="pdfBox" id="pdf_images_box" style="display:none;">
-    <h3 id="pdf_images_title">Selected Option Images</h3>
-    <div id="pdf_images" class="pdfImageGrid"></div>
-  </div>
+
 
   <div class="pdfBox">
     <h3 id="pdf_request_title">Request</h3>
     <div id="pdf_request" style="font-size:12px; line-height:1.6;">-</div>
   </div>
+
+  <div class="pdfBox pdfReferenceBox" id="pdf_reference_box">
+    <h3>참고사항</h3>
+    <div class="pdfReferenceContent">
+      <div class="pdfReferenceBlock">
+        <div class="pdfReferenceHeading">주차 안내</div>
+        <p class="pdfReferenceText">혼주 및 친척 : 틸티드 앞 15대
+일반 하객 : 틸티드 앞은 가족 전용으로 주차 불가하여 공영 및 유료 주차장 이용으로 안내하기</p>
+      </div>
+
+      <div class="pdfReferenceBlock">
+        <div class="pdfReferenceHeading">이용 시간</div>
+        <p class="pdfReferenceText">일찍 도착해도 아래 시간부터 입장 가능합니다.
+점심 예식 : 10:30 / 저녁 예식 : 16:30
+점심 예식 12시의 경우, 10:30부터 식사·디저트·음주류 이용 가능 안내
+저녁 예식 18시의 경우, 16:30부터 식사·디저트·음주류 이용 가능 안내</p>
+      </div>
+
+      <div class="pdfReferenceBlock">
+        <div class="pdfReferenceHeading">도착 전 준비</div>
+        <p class="pdfReferenceText">신랑·신부·혼주는 식장 도착 전 준비 완료 후 도착하여 이용 시간을 최대한 활용하시길 권장드립니다.</p>
+      </div>
+
+      <div class="pdfReferenceGrid">
+        <ul class="pdfReferenceList">
+          <li>플라워 패킹 가능</li>
+          <li>혼주석, 연주자석 세팅 가능</li>
+          <li>케이크 커팅 시 테이블 세팅 가능</li>
+          <li>축의함, 방명록, 봉투, 펜 보유 및 세팅</li>
+          <li>무선마이크 6개 / 스탠드 1개 / 마이크 전달 가능</li>
+        </ul>
+        <ul class="pdfReferenceList">
+          <li>보면대 / 단상 3개 보유</li>
+          <li>우천 시 신랑·신부 예식용 우산 보유</li>
+          <li>웨딩 케이스 보유(혼인서약서, 성혼선언문)</li>
+          <li>신랑·신부·혼주 입장 시 도어 오픈 스태프 지원 가능</li>
+          <li>라스트 오더는 대관(본식) 종료 30분 전입니다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="pdfBox" id="pdf_images_box" style="display:none;">
+    <h3 id="pdf_images_title">Selected Option Images</h3>
+    <div id="pdf_images" class="pdfImageGrid"></div>
+  </div>
+
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1045,16 +1236,16 @@
 
       const head = document.createElement("div");
       head.className = "optHead";
-      const rawHint = String(o.hint || "").trim();
-      const isPriceHint = /^\*?\+/.test(rawHint);
+      const showHintNextToLabel = !!o.hint && (stateKey === "flowerRoad" || stateKey === "archPlacement");
+      const hintText = escapeHtml(translateHintValue(o.hint || ""));
       head.innerHTML = `
         <div class="label">
           <div>${escapeHtml(translateSingleValue(o.tag || ""))}</div>
-          ${isPriceHint ? `<div class="priceHint">${escapeHtml(translateHintValue(rawHint))}</div>` : ""}
+          ${showHintNextToLabel ? `<div class="inlineHint">${hintText}</div>` : ""}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
           <div class="radioDot" aria-hidden="true"></div>
-          ${(!isPriceHint && rawHint) ? `<div class="hint">${escapeHtml(translateHintValue(rawHint))}</div>` : ""}
+          <div class="hint">${showHintNextToLabel ? "" : hintText}</div>
         </div>
       `;
 
@@ -1550,6 +1741,41 @@
       <div class="tag muted"><b>${escapeHtml(lang.detailedInquiries)}</b>: ${escapeHtml(FIXED_15)}</div>
 
       <div class="hr"></div>
+      <div class="summaryReferenceBox">
+        <b>참고사항</b>
+        <div class="summaryRefSection">
+          <div class="summaryRefTitle">주차 안내</div>
+          <div class="summaryRefText">혼주 및 친척 : 틸티드 앞 15대
+일반 하객 : 공영 및 유료 주차장 이용 안내</div>
+        </div>
+        <div class="summaryRefSection">
+          <div class="summaryRefTitle">이용 시간</div>
+          <div class="summaryRefText">점심 예식 : 10:30부터 입장 가능
+저녁 예식 : 16:30부터 입장 가능
+식사·디저트·음주류는 입장 가능 시간부터 이용 가능</div>
+        </div>
+        <div class="summaryRefSection">
+          <div class="summaryRefTitle">도착 전 준비</div>
+          <div class="summaryRefText">신랑·신부·혼주는 식장 도착 전 준비 완료 후 도착 권장</div>
+        </div>
+        <div class="summaryRefSection">
+          <div class="summaryRefTitle">지원 가능 항목</div>
+          <ul>
+            <li>플라워 패킹 가능</li>
+            <li>혼주석, 연주자석 세팅 가능</li>
+            <li>케이크 커팅 시 테이블 세팅 가능</li>
+            <li>축의함, 방명록, 봉투, 펜 보유 및 세팅</li>
+            <li>무선마이크 6개 / 스탠드 1개 / 마이크 전달 가능</li>
+            <li>보면대 / 단상 3개 보유</li>
+            <li>우천 시 신랑·신부 예식용 우산 보유</li>
+            <li>웨딩 케이스 보유</li>
+            <li>도어 오픈 스태프 지원 가능</li>
+            <li>라스트 오더는 대관 종료 30분 전</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hr"></div>
       <div style="
         border:1px solid var(--line);
         border-radius:12px;
@@ -1707,6 +1933,12 @@
     }
 
     byId("pdf_request").textContent = state.requestNote || "-";
+
+    const pdfReferenceBox = byId("pdf_reference_box");
+    if(pdfReferenceBox){
+      pdfReferenceBox.style.display = "block";
+      pdfReferenceBox.style.visibility = "visible";
+    }
   }
 
   function buildExcelSheetData(){
