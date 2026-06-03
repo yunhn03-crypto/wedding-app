@@ -198,6 +198,8 @@
       display:flex;
       gap:10px;
       align-items:center;
+      flex-wrap:wrap;
+      min-width:0;
       font-weight:900;
       font-size:18px;
       text-transform:lowercase;
@@ -209,6 +211,16 @@
       text-align:right;
       min-width:120px;
       text-transform:lowercase;
+    }
+    .optHead .priceHint{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.4;
+      font-weight:500;
+      text-align:left;
+      min-width:0;
+      text-transform:none;
+      white-space:nowrap;
     }
     .radioDot{
       display:flex;
@@ -1040,11 +1052,16 @@
 
       const head = document.createElement("div");
       head.className = "optHead";
+      const rawHint = String(o.hint || "").trim();
+      const isPriceHint = /^\*?\+/.test(rawHint);
       head.innerHTML = `
-        <div class="label"><div>${escapeHtml(translateSingleValue(o.tag || ""))}</div></div>
+        <div class="label">
+          <div>${escapeHtml(translateSingleValue(o.tag || ""))}</div>
+          ${isPriceHint ? `<div class="priceHint">${escapeHtml(translateHintValue(rawHint))}</div>` : ""}
+        </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
           <div class="radioDot" aria-hidden="true"></div>
-          <div class="hint">${escapeHtml(translateHintValue(o.hint || ""))}</div>
+          ${(!isPriceHint && rawHint) ? `<div class="hint">${escapeHtml(translateHintValue(rawHint))}</div>` : ""}
         </div>
       `;
 
