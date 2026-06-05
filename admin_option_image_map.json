@@ -4,16 +4,15 @@
   "gardenRoadDir|up-left": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482323/tilted-hannam/qbmttldejn7masfvnran.jpg",
   "gardenRoadDir|up-right": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482358/tilted-hannam/acfcaykopo7nesfmjwbf.jpg",
 
-
-  "virginType|ground": "",
-  "virginType|rattan": "",
+  "virginType|ground": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780481632/tilted-hannam/nn5epsxn4gsta7bsd5bm.jpg",
+  "virginType|rattan": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780481295/tilted-hannam/u8yznkd4n4whmwtppql1.jpg",
   "virginType|stripe": "",
 
-  "whiteRoad|o": "",
-  "whiteRoad|x": "",
+"whiteRoad|o": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482590/tilted-hannam/uhnneabmd4jbdj2lm2op.jpg",
+  "whiteRoad|x": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482600/tilted-hannam/uqpvbywjqiskbokgkckc.jpg"
 
-  "flowerRoad|o": "",
-  "flowerRoad|x": "",
+"flowerRoad|o": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780481043/tilted-hannam/oyipgqbfdrz1rocpiz5p.jpg",
+  "flowerRoad|x": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780481274/tilted-hannam/zoc38q2ikzazbkwvi357.jpg",
 
   "archPlacement|a": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571410/tilted-hannam/dhiw1a0d8ogrt2loryht.jpg",
   "archPlacement|b": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571436/tilted-hannam/ai9d4m1i9h9y7umslb30.jpg",
@@ -45,16 +44,16 @@
   "tableDeco|blue": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572421/tilted-hannam/n1ldypvitfwawqdtbebu.jpg",
   "tableDeco|-": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572437/tilted-hannam/mnpsqpvmo2xz4rv7cfan.jpg",
 
-  "candleColor|cream": "",
-  "candleColor|pink": "",
-  "candleColor|green": "",
-  "candleColor|purple": "",
-  "candleColor|yellow": "",
-  "candleColor|black": "",
-  "candleColor|orange": "",
-  "candleColor|mint": "",
-  "candleColor|blue": "",
-  "candleColor|-": "",
+ "candleColor|-": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780480911/tilted-hannam/ywuspmyk6c5ovx9sdcgy.png",
+  "candleColor|black": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780479672/tilted-hannam/xx66fwmwsysejcs61m6b.jpg",
+  "candleColor|blue": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780480542/tilted-hannam/bqzxhndo2zfii8opslzx.jpg",
+  "candleColor|cream": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780479887/tilted-hannam/amm4dhnerjcxtqjhnokl.jpg",
+  "candleColor|green": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780479745/tilted-hannam/ojisnb9lynnyllljwnlp.jpg",
+  "candleColor|mint": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780480157/tilted-hannam/x2uerakqr8lmwd7m6jkl.jpg",
+  "candleColor|orange": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780480082/tilted-hannam/xaqqrerjre6eajunyx2f.jpg",
+  "candleColor|pink": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780479944/tilted-hannam/uhh9sgti49z3kw7lrrde.jpg",
+  "candleColor|purple": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780479816/tilted-hannam/t4fwbbo67bbdbyapep9q.jpg",
+  "candleColor|yellow": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780479586/tilted-hannam/yypck9h8vcrov5j3xqdm.jpg",
 
   "chairFabricColor|cream": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572486/tilted-hannam/x6nztmhlojahqtu5q3rj.jpg",
   "chairFabricColor|pink": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572513/tilted-hannam/pazdkrdntr8snuo9yr4p.jpg",
