@@ -1,14 +1,17 @@
-{
+const ADMIN_OPTION_IMAGE_MAP = {
   "archFabricType|-": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572070/tilted-hannam/kyzg9fnakvpk2qrxaiiz.jpg",
   "archFabricType|curtain": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571918/tilted-hannam/c1lv1pffl9asx6smtgri.jpg",
   "archFabricType|hanging": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571961/tilted-hannam/divcv1o4x0mlk9qaqnfq.jpg",
   "archFabricType|straight": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572037/tilted-hannam/nnozyosl0ee6lpj8413q.jpg",
+
   "archPlacement|a": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571410/tilted-hannam/dhiw1a0d8ogrt2loryht.jpg",
   "archPlacement|b": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571436/tilted-hannam/ai9d4m1i9h9y7umslb30.jpg",
   "archPlacement|c": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571846/tilted-hannam/mvqdrtp9iqcgd9xuex2w.jpg",
   "archPlacement|d": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780571881/tilted-hannam/gttskrclfqvfopffdjld.jpg",
+
   "bouquet|o": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575764/tilted-hannam/mrfciaor5vwk0pqalal8.jpg",
   "bouquet|x": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575774/tilted-hannam/bwapocwt6vtdxhxhp0a2.jpg",
+
   "chairFabricColor|-": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575748/tilted-hannam/bo3hhvq0db5ir3afzccr.jpg",
   "chairFabricColor|black": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575673/tilted-hannam/cpwhww8eojs0wvllqqc4.jpg",
   "chairFabricColor|blue": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575726/tilted-hannam/yzuicnwhacrrmdvc7who.jpg",
@@ -18,15 +21,19 @@
   "chairFabricColor|pink": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572513/tilted-hannam/pazdkrdntr8snuo9yr4p.jpg",
   "chairFabricColor|purple": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575645/tilted-hannam/iqh5fotr4epjrjqmmddr.png",
   "chairFabricColor|white": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575714/tilted-hannam/hnebyccycmsoutv5ifw8.jpg",
+
   "eventTicket|o": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575795/tilted-hannam/eu0kqqfpakwgobd9k03y.jpg",
   "eventTicket|x": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780575802/tilted-hannam/sd8relv5qqumnrvh8hht.jpg",
+
   "fabricColor|blue": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572213/tilted-hannam/jqytq0gqhs6wc17uhw7f.jpg",
   "fabricColor|cream": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572097/tilted-hannam/nmcnaapyxdql4rqejark.jpg",
   "fabricColor|green": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572195/tilted-hannam/ish1hrkpkkrbht59gg9q.jpg",
   "fabricColor|pink": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572122/tilted-hannam/oeqhsfgsr1cc8ehtc6m9.jpg",
   "fabricColor|white": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572150/tilted-hannam/hbcvslayt8b54naekixt.jpg",
+
   "gardenTableShape|o": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572243/tilted-hannam/rey5861n4wt2vltoijfq.jpg",
   "gardenTableShape|ㅁ": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572276/tilted-hannam/vfhpiig2ieyvjgzqxskp.jpg",
+
   "tableDeco|-": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572437/tilted-hannam/mnpsqpvmo2xz4rv7cfan.jpg",
   "tableDeco|black": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572389/tilted-hannam/ruk5ryo4oqv9c6vak0pq.jpg",
   "tableDeco|blue": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572421/tilted-hannam/n1ldypvitfwawqdtbebu.jpg",
@@ -36,4 +43,4 @@
   "tableDeco|pink": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572317/tilted-hannam/zb6nv06audr6dueqwqsh.jpg",
   "tableDeco|purple": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572350/tilted-hannam/d5p4fxu9hrshyoupmt3l.jpg",
   "tableDeco|white": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780572406/tilted-hannam/xcifmdkdc52ahrusxmgx.jpg"
-}
+};
