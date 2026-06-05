@@ -1212,7 +1212,7 @@ stripe: "스트라이프",
   }
 
   function getOptionImageSrc(k){
-    return ADMIN_RUNTIME_IMAGE_MAP[k] || REMOTE_OPTION_IMAGE_MAP[k] || ADMIN_OPTION_IMAGE_MAP[k] || "";
+    return ADMIN_RUNTIME_IMAGE_MAP[k] || state.optionImages[k] || REMOTE_OPTION_IMAGE_MAP[k] || ADMIN_OPTION_IMAGE_MAP[k] || "";
   }
 
   function renderOptionImageGrid({ title, hintRight="", stateKey, value, options, multi=false }){
