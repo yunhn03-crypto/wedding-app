@@ -1,8 +1,9 @@
 {
-  "gardenRoadDir|left": "",
-  "gardenRoadDir|up-left": "",
-  "gardenRoadDir|up": "",
-  "gardenRoadDir|up-right": "",
+"gardenRoadDir|left": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482310/tilted-hannam/wobu4izprglptpgorhwn.jpg",
+  "gardenRoadDir|up": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482344/tilted-hannam/j6mbpfchlwskql9n8bjp.jpg",
+  "gardenRoadDir|up-left": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482323/tilted-hannam/qbmttldejn7masfvnran.jpg",
+  "gardenRoadDir|up-right": "https://res.cloudinary.com/dgtmr3fzt/image/upload/v1780482358/tilted-hannam/acfcaykopo7nesfmjwbf.jpg",
+
 
   "virginType|ground": "",
   "virginType|rattan": "",
