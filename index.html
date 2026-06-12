@@ -358,8 +358,14 @@
         break-inside: avoid !important;
       }
       #pdf_images_box{
+        page-break-before: auto !important;
+        break-before: auto !important;
+      }
+      .pdfImagePage{
         page-break-before: always !important;
         break-before: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
       }
     }
 
@@ -413,6 +419,19 @@
       font-weight:800;
       text-align:right;
       white-space:pre-wrap;
+    }
+    .pdfImagePage{
+      page-break-before:always;
+      break-before:page;
+      page-break-inside:avoid;
+      break-inside:avoid;
+    }
+    .pdfImagePage h3{
+      margin:0 0 8px;
+      font-size:13px;
+      font-weight:900;
+      text-transform:none;
+      letter-spacing:.2px;
     }
     .pdfImageGrid{
       display:grid;
@@ -701,16 +720,16 @@
     </div>
   </div>
 
-  <div class="pdfBox" id="pdf_images_box" style="display:none;">
-    <h3 id="pdf_images_title">Selected Option Images</h3>
-    <div id="pdf_images" class="pdfImageGrid"></div>
-  </div>
+  <div id="pdf_images_box" style="display:none;"></div>
 
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
 <script src="./cloudinary.config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="./firebase.config.js"></script>
 
 <script>
   const params = new URLSearchParams(location.search);
@@ -720,6 +739,13 @@
   // shared image map loaded from external JSON file
   let REMOTE_OPTION_IMAGE_MAP = {};
   let ADMIN_RUNTIME_IMAGE_MAP = {};
+
+  // Firebase Realtime Database image map
+  let FIREBASE_OPTION_IMAGE_MAP = {};
+  let FIREBASE_APP = null;
+  let FIREBASE_DB = null;
+  let FIREBASE_OPTION_IMAGE_REF = null;
+  let FIREBASE_READY = false;
 
   const CLOUDINARY_CONFIG = (window.CLOUDINARY_CONFIG && typeof window.CLOUDINARY_CONFIG === "object")
     ? window.CLOUDINARY_CONFIG
@@ -731,8 +757,128 @@
         multiple: false
       };
 
+  const FIREBASE_CONFIG = (window.FIREBASE_CONFIG && typeof window.FIREBASE_CONFIG === "object")
+    ? window.FIREBASE_CONFIG
+    : {
+        apiKey: "",
+        authDomain: "",
+        databaseURL: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: "",
+        optionImagePath: "tiltedHannam/optionImages"
+      };
+
   function cloudinaryReady(){
     return !!(window.cloudinary && CLOUDINARY_CONFIG.cloudName && CLOUDINARY_CONFIG.uploadPreset);
+  }
+
+  function firebaseReady(){
+    return !!(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.databaseURL);
+  }
+
+  function getFirebaseOptionImagePath(){
+    return String(FIREBASE_CONFIG.optionImagePath || "tiltedHannam/optionImages")
+      .replace(/^\/+|\/+$/g, "");
+  }
+
+  function cleanFirebaseImageMap(data){
+    const out = {};
+    if(!data || typeof data !== "object") return out;
+
+    Object.keys(data).forEach((key) => {
+      const item = data[key];
+      let url = "";
+
+      if(typeof item === "string"){
+        url = item;
+      }else if(item && typeof item === "object"){
+        url = item.imageUrl || item.url || "";
+      }
+
+      url = String(url || "").trim();
+      if(validateImageUrl(url)){
+        out[key] = url;
+      }
+    });
+
+    return out;
+  }
+
+  function initFirebaseRealtimeImages(){
+    if(!firebaseReady()){
+      console.warn("firebase.config.js 설정이 없어서 JSON 방식으로 작동합니다.");
+      return;
+    }
+
+    try{
+      FIREBASE_APP = window.firebase.apps && window.firebase.apps.length
+        ? window.firebase.app()
+        : window.firebase.initializeApp(FIREBASE_CONFIG);
+
+      FIREBASE_DB = window.firebase.database();
+      FIREBASE_OPTION_IMAGE_REF = FIREBASE_DB.ref(getFirebaseOptionImagePath());
+      FIREBASE_READY = true;
+
+      FIREBASE_OPTION_IMAGE_REF.on("value", (snapshot) => {
+        FIREBASE_OPTION_IMAGE_MAP = cleanFirebaseImageMap(snapshot.val());
+        render();
+      }, (error) => {
+        console.error("Firebase image realtime sync failed", error);
+      });
+    }catch(e){
+      FIREBASE_READY = false;
+      console.error("Firebase init failed", e);
+    }
+  }
+
+  function getMergedOptionImageMap(){
+    return Object.assign(
+      {},
+      ADMIN_OPTION_IMAGE_MAP || {},
+      REMOTE_OPTION_IMAGE_MAP || {},
+      state.optionImages || {},
+      FIREBASE_OPTION_IMAGE_MAP || {},
+      ADMIN_RUNTIME_IMAGE_MAP || {}
+    );
+  }
+
+  function setRealtimeOptionImage(key, url){
+    const clean = String(url || "").trim();
+    if(!clean){
+      deleteRealtimeOptionImage(key);
+      return;
+    }
+
+    ADMIN_RUNTIME_IMAGE_MAP[key] = clean;
+    state.optionImages = Object.assign({}, state.optionImages || {}, { [key]: clean });
+    render();
+
+    if(FIREBASE_READY && FIREBASE_OPTION_IMAGE_REF){
+      FIREBASE_OPTION_IMAGE_REF.child(key).set(clean).catch((error) => {
+        console.error("Firebase image save failed", error);
+        alert("Firebase 저장 실패: Database Rules 또는 firebase.config.js를 확인하세요.");
+      });
+    }
+  }
+
+  function deleteRealtimeOptionImage(key){
+    delete ADMIN_RUNTIME_IMAGE_MAP[key];
+    delete FIREBASE_OPTION_IMAGE_MAP[key];
+    if(state.optionImages && typeof state.optionImages === "object"){
+      delete state.optionImages[key];
+    }
+    render();
+
+    if(FIREBASE_READY && FIREBASE_OPTION_IMAGE_REF){
+      FIREBASE_OPTION_IMAGE_REF.child(key).remove().catch((error) => {
+        console.error("Firebase image delete failed", error);
+        alert("Firebase 삭제 실패: Database Rules 또는 firebase.config.js를 확인하세요.");
+      });
+    }else{
+      loadRemoteImageMap().finally(render);
+    }
   }
 
   function openCloudinaryUpload(targetKey, afterUpload){
@@ -766,9 +912,8 @@
       if(result && result.event === "success"){
         const secureUrl = result.info && result.info.secure_url ? result.info.secure_url : "";
         if(secureUrl){
-          ADMIN_RUNTIME_IMAGE_MAP[targetKey] = secureUrl;
+          setRealtimeOptionImage(targetKey, secureUrl);
           if(typeof afterUpload === "function") afterUpload(secureUrl);
-          render();
         }
       }
     });
@@ -906,7 +1051,6 @@
         dinner: "dinner",
 cherryRed: "cherry red",
 stripe: "stripe",
-coral: "coral",
       }
     },
     ko: {
@@ -954,7 +1098,6 @@ coral: "coral",
         dinner: "디너",
 cherryRed: "체리레드",
 stripe: "스트라이프",
-coral: "코랄",
       }
     }
   };
@@ -1021,7 +1164,7 @@ coral: "코랄",
   function getOptionImageText(){ return state.uiLang === "ko" ? "옵션 이미지" : "option image"; }
   function getOXText(){ return "o / x"; }
   function getPlaceholderImageSlotTitle(){ return state.uiLang === "ko" ? "이미지 슬롯" : "image slot"; }
-  function getPlaceholderImageSlotDesc(){ return state.uiLang === "ko" ? "관리자 맵에 이미지 url 연결" : "connect image url in admin map"; }
+  function getPlaceholderImageSlotDesc(){ return state.uiLang === "ko" ? "관리자에서 이미지 url 연결" : "connect image url in admin"; }
   function getStepNoteSquareTable(){ return state.uiLang === "ko" ? "* 스퀘어 테이블(논가든)에 적용됩니다." : "* applies to square tables (non-garden)."; }
   function getStepNoteCandle(){ return state.uiLang === "ko" ? "* 안전상 캔들 점화는 하지 않습니다." : "* candle is not lit for safety."; }
   function getBouquetPlaceholder(){ return state.uiLang === "ko" ? "부케 구성을 작성하세요 (영문)" : "write bouquet composition (english)"; }
@@ -1213,7 +1356,12 @@ coral: "코랄",
   }
 
   function getOptionImageSrc(k){
-    return ADMIN_RUNTIME_IMAGE_MAP[k] || state.optionImages[k] || REMOTE_OPTION_IMAGE_MAP[k] || ADMIN_OPTION_IMAGE_MAP[k] || "";
+    return ADMIN_RUNTIME_IMAGE_MAP[k]
+      || FIREBASE_OPTION_IMAGE_MAP[k]
+      || (state.optionImages && state.optionImages[k])
+      || REMOTE_OPTION_IMAGE_MAP[k]
+      || ADMIN_OPTION_IMAGE_MAP[k]
+      || "";
   }
 
   function renderOptionImageGrid({ title, hintRight="", stateKey, value, options, multi=false }){
@@ -1295,12 +1443,10 @@ coral: "코랄",
         if(!IS_ADMIN) return;
         const v = String(urlInput.value || "").trim();
         if(!v){
-          delete ADMIN_RUNTIME_IMAGE_MAP[k];
-          loadRemoteImageMap().finally(render);
+          deleteRealtimeOptionImage(k);
           return;
         }
-        ADMIN_RUNTIME_IMAGE_MAP[k] = v;
-        render();
+        setRealtimeOptionImage(k, v);
       });
 
       const btnDel = document.createElement("button");
@@ -1309,8 +1455,7 @@ coral: "코랄",
       btnDel.addEventListener("click", (e) => {
         e.stopPropagation();
         if(!IS_ADMIN) return;
-        delete ADMIN_RUNTIME_IMAGE_MAP[k];
-        render();
+        deleteRealtimeOptionImage(k);
       });
 
       tools.appendChild(urlInput);
@@ -1527,7 +1672,8 @@ coral: "코랄",
         options: [
           { tag:"curtain", val:"curtain" },
           { tag:"hanging", val:"hanging" },
-          { tag:"straight", val:"straight" }
+          { tag:"straight", val:"straight" },
+          { tag:"-", val:"-" }
         ],
         multi:false
       }));
@@ -1583,7 +1729,6 @@ coral: "코랄",
           { tag:"black", val:"black" },
           { tag:"white", val:"white" },
           { tag:"blue", val:"blue" },
-          { tag:"coral", val:"coral" },
           { tag:"-", val:"-" }
         ],
         multi:true
@@ -1854,7 +1999,7 @@ coral: "코랄",
   }
 
   function waitForPdfImages(timeoutMs = 5000){
-    const imgs = Array.from(document.querySelectorAll("#pdf_images img"));
+    const imgs = Array.from(document.querySelectorAll("#pdf_images_box img"));
     if(!imgs.length) return Promise.resolve();
 
     return new Promise((resolve) => {
@@ -1892,7 +2037,6 @@ coral: "코랄",
     byId("pdf_title_main").textContent = getPdfTitle();
     byId("pdf_basic_title").textContent = getPdfSectionTitleBasic();
     byId("pdf_selections_title").textContent = getPdfSectionTitleSelections();
-    byId("pdf_images_title").textContent = getPdfSectionTitleImages();
     byId("pdf_request_title").textContent = getPdfSectionTitleRequest();
 
     byId("pdf_label_date").textContent = lang.date;
@@ -1913,22 +2057,34 @@ coral: "코랄",
 
     const imageEntries = buildSelectedImageEntries();
     const pdfImagesBox = byId("pdf_images_box");
-    const pdfImages = byId("pdf_images");
 
     if(imageEntries.length){
+      const pageSize = 4;
+      const imagePages = [];
+      for(let i = 0; i < imageEntries.length; i += pageSize){
+        imagePages.push(imageEntries.slice(i, i + pageSize));
+      }
+
       pdfImagesBox.style.display = "block";
-      pdfImages.innerHTML = imageEntries.map((item) => `
-        <div class="pdfImageCard">
-          <img class="pdfImageThumb" src="${escapeHtml(item.src)}" alt="${escapeHtml(item.label)}">
-          <div class="pdfImageMeta">
-            <div class="pdfImageLabel">${escapeHtml(item.label)}</div>
-            <div class="pdfImageValue">${escapeHtml(asDisplay(item.value))}</div>
+      pdfImagesBox.innerHTML = imagePages.map((pageItems, pageIndex) => `
+        <div class="pdfBox pdfImagePage">
+          <h3>${escapeHtml(getPdfSectionTitleImages())}${imagePages.length > 1 ? ` ${pageIndex + 1}/${imagePages.length}` : ""}</h3>
+          <div class="pdfImageGrid">
+            ${pageItems.map((item) => `
+              <div class="pdfImageCard">
+                <img class="pdfImageThumb" src="${escapeHtml(item.src)}" alt="${escapeHtml(item.label)}">
+                <div class="pdfImageMeta">
+                  <div class="pdfImageLabel">${escapeHtml(item.label)}</div>
+                  <div class="pdfImageValue">${escapeHtml(asDisplay(item.value))}</div>
+                </div>
+              </div>
+            `).join("")}
           </div>
         </div>
       `).join("");
     }else{
       pdfImagesBox.style.display = "none";
-      pdfImages.innerHTML = "";
+      pdfImagesBox.innerHTML = "";
     }
 
     byId("pdf_request").textContent = state.requestNote || "-";
@@ -2041,7 +2197,7 @@ coral: "코랄",
 
   function save(){
     state.lastStep = currentStep;
-    state.optionImages = ADMIN_RUNTIME_IMAGE_MAP;
+    state.optionImages = getMergedOptionImageMap();
     const payload = JSON.stringify(state);
     const kb = approxSizeInKB(payload);
     if(kb > 4600){
@@ -2106,8 +2262,9 @@ coral: "코랄",
       return;
     }
     const cleaned = {};
-    Object.keys(ADMIN_RUNTIME_IMAGE_MAP).sort().forEach((k) => {
-      const v = String(ADMIN_RUNTIME_IMAGE_MAP[k] || "").trim();
+    const merged = getMergedOptionImageMap();
+    Object.keys(merged).sort().forEach((k) => {
+      const v = String(merged[k] || "").trim();
       if(validateImageUrl(v)) cleaned[k] = v;
     });
 
@@ -2156,7 +2313,10 @@ coral: "코랄",
     window.print();
   });
 
-  loadRemoteImageMap().finally(render);
+  loadRemoteImageMap().finally(() => {
+    initFirebaseRealtimeImages();
+    render();
+  });
 </script>
 </body>
 </html>
