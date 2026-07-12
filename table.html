@@ -71,6 +71,12 @@
     </div>
   </header>
 
+<script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
+<script src="./cloudinary.config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="./firebase.config.js"></script>
+
 <div id="th-layout-planner-svg">
   <style>
     #th-layout-planner-svg{
@@ -203,15 +209,22 @@
     #th-layout-planner-svg .th-section-price{color:var(--muted);font-size:13px;font-weight:800;}
     #th-layout-planner-svg .th-choice-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0;}
     #th-layout-planner-svg .th-drink-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
-    #th-layout-planner-svg .th-drink-item{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff;}
+    #th-layout-planner-svg .th-drink-item{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;}
+    #th-layout-planner-svg .th-drink-canvas{position:relative;width:100%;aspect-ratio:4/3;background:var(--soft);overflow:hidden;}
+    #th-layout-planner-svg .th-drink-canvas img{width:100%;height:100%;object-fit:cover;display:block;}
+    #th-layout-planner-svg .th-drink-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:11px;text-align:center;padding:8px;}
+    #th-layout-planner-svg .th-drink-info{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:10px;align-items:center;padding:10px;}
     #th-layout-planner-svg .th-drink-name{font-weight:800;font-size:13px;line-height:1.35;}
     #th-layout-planner-svg .th-drink-meta{display:block;margin-top:3px;color:var(--muted);font-size:12px;font-weight:600;}
     #th-layout-planner-svg .th-drink-qty{width:92px;height:38px;border:1px solid var(--line);border-radius:12px;padding:0 10px;text-align:center;background:#fff;}
+    #th-layout-planner-svg .th-drink-tools{display:flex;flex-wrap:wrap;gap:6px;padding:0 10px 10px;}
+    #th-layout-planner-svg .th-drink-tools input[type="text"]{flex:1 1 140px;height:34px;border:1px solid var(--line);border-radius:10px;padding:0 8px;font-size:12px;background:#fff;}
+    #th-layout-planner-svg .th-drink-tools button{padding:7px 9px;font-size:11px;}
     #th-layout-planner-svg .th-request-textarea{width:100%;min-height:360px;border:1px solid var(--line);border-radius:14px;padding:14px;font:inherit;font-size:14px;line-height:1.6;resize:vertical;background:#fff;}
     #th-layout-planner-svg .th-mini-summary{margin-top:12px;border:1px dashed var(--line);border-radius:12px;padding:10px;color:var(--muted);font-size:13px;line-height:1.6;background:var(--soft);}
     @media (max-width:720px){
       #th-layout-planner-svg .th-drink-grid{grid-template-columns:1fr;}
-      #th-layout-planner-svg .th-drink-item{grid-template-columns:1fr 82px;}
+      #th-layout-planner-svg .th-drink-info{grid-template-columns:1fr 82px;}
       #th-layout-planner-svg .th-drink-qty{width:82px;}
     }
 
@@ -366,7 +379,7 @@
 
           <div id="th-drinks-panel" class="th-extra-panel" aria-label="음주류 선택">
             <h3 class="th-extra-title">음주류 선택</h3>
-
+            <button type="button" class="th-small-btn adminOnly" id="th-export-drink-images">이미지 맵 내보내기</button>
 
             <div class="th-section-box">
               <h4 class="th-section-title">웰컴드링크 <span class="th-section-price">30잔 55만원 / 60잔 100만원 / 90잔 145만원</span></h4>
@@ -390,52 +403,22 @@
 
             <div class="th-section-box">
               <h4 class="th-section-title">주류 <span class="th-section-price">와인/스파클링 단가</span></h4>
-              <div class="th-drink-grid">
-                <label class="th-drink-item"><span><span class="th-drink-name">VENTOUX ROUGE FAMILLE PERRIN</span><span class="th-drink-meta">벙뚜 루즈 파미유 페랑 · 5.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="laVieilleFermeRouge" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">LUBERON BLANC FAMILLE PERRIN</span><span class="th-drink-meta">루베롱 블랑 / 파미유 페랑 · 5.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="luberonBlanc" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">MONASTERIOLO CAVA BRUT</span><span class="th-drink-meta">모나스테리올로 까바 브뤼 · 5.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="cavaBrut" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">LA VIEILLE FERME ROSE</span><span class="th-drink-meta">라 비에이 페름 로제 · 5.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="laVieilleFermeRose" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">MOSCATO SPUMANTE GOLD LABEL</span><span class="th-drink-meta">모스카토 스푸만테 골드라벨 / 룽가로티 · 5.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="moscatoSpumante" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">BRUT MAJEUR NV AYALA</span><span class="th-drink-meta">브뤼 마저 NV / 아얄라 · 24.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="ayalaBrutMajeur" placeholder="0"></label>
-              </div>
+              <div class="th-drink-grid" data-drink-group="wine"></div>
             </div>
 
             <div class="th-section-box">
               <h4 class="th-section-title">주류 <span class="th-section-price">캔/병 0.8</span></h4>
-              <div class="th-drink-grid">
-                <label class="th-drink-item"><span><span class="th-drink-name">Somersby Apple</span><span class="th-drink-meta">써머스비 애플 · 0.8</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="somersbyApple" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Stella Artois</span><span class="th-drink-meta">스텔라 아르투아 · 0.8</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="stellaArtois" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Budweiser</span><span class="th-drink-meta">버드와이저 · 0.8</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="budweiser" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">KGB Vodka Lemon</span><span class="th-drink-meta">KGB 보드카 레몬 · 0.8</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="kgbVodkaLemon" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Tiger Radler Lemon</span><span class="th-drink-meta">타이거 라들러 레몬 · 0.8</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="tigerRadler" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Kronenbourg 1664 Blanc</span><span class="th-drink-meta">크로넨버그 1664 블랑 · 0.8</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="kronenbourg1664" placeholder="0"></label>
-              </div>
+              <div class="th-drink-grid" data-drink-group="canBottle"></div>
             </div>
 
             <div class="th-section-box">
               <h4 class="th-section-title">주류 <span class="th-section-price">대용량 55</span></h4>
-              <div class="th-drink-grid">
-                <label class="th-drink-item"><span><span class="th-drink-name">생맥주 20L</span><span class="th-drink-meta">55</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="draftBeer20L" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">동동주 20L</span><span class="th-drink-meta">55</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="dongdongju20L" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">하이볼 10L</span><span class="th-drink-meta">55</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="highball10L" placeholder="0"></label>
-              </div>
+              <div class="th-drink-grid" data-drink-group="bulk"></div>
             </div>
 
             <div class="th-section-box">
               <h4 class="th-section-title">음료 <span class="th-section-price">0.5</span></h4>
-              <div class="th-drink-grid">
-                <label class="th-drink-item"><span><span class="th-drink-name">Pepsi</span><span class="th-drink-meta">펩시 일반 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="pepsiRegular" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Pepsi Zero</span><span class="th-drink-meta">펩시 제로 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="pepsiZero" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Dr Pepper</span><span class="th-drink-meta">닥터페퍼 일반 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="drPepperRegular" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Dr Pepper Zero</span><span class="th-drink-meta">닥터페퍼 제로 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="drPepperZero" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Sprite</span><span class="th-drink-meta">스프라이트 일반 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="spriteRegular" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Sprite Zero</span><span class="th-drink-meta">스프라이트 제로 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="spriteZero" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Sanpellegrino Grapefruit</span><span class="th-drink-meta">산펠레그리노 과일 탄산 자몽 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="sanpellegrinoGrapefruit" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Sanpellegrino Lemon</span><span class="th-drink-meta">산펠레그리노 과일 탄산 레몬 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="sanpellegrinoLemon" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Sanpellegrino Blood Orange</span><span class="th-drink-meta">산펠레그리노 과일 탄산 레드오렌지 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="sanpellegrinoBloodOrange" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">Sanpellegrino Orange</span><span class="th-drink-meta">산펠레그리노 과일 탄산 오렌지 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="sanpellegrinoOrange" placeholder="0"></label>
-                <label class="th-drink-item"><span><span class="th-drink-name">S.Pellegrino Sparkling Water</span><span class="th-drink-meta">산펠레그리노 탄산수 · 0.5</span></span><input class="th-drink-qty" type="number" min="0" step="1" data-drink-qty="spellegrinoWater" placeholder="0"></label>
-              </div>
+              <div class="th-drink-grid" data-drink-group="soda"></div>
             </div>
 
           </div>
@@ -816,34 +799,310 @@
       const AUTO_MEAL_COUNT = 216;
 
       const DRINK_CATALOG = [
-        {key:'laVieilleFermeRouge', name:'VENTOUX ROUGE FAMILLE PERRIN', label:'벙뚜 루즈 파미유 페랑', unit:'5.5'},
-        {key:'luberonBlanc', name:'LUBERON BLANC FAMILLE PERRIN', label:'루베롱 블랑 / 파미유 페랑', unit:'5.5'},
-        {key:'cavaBrut', name:'MONASTERIOLO CAVA BRUT', label:'모나스테리올로 까바 브뤼', unit:'5.5'},
-        {key:'laVieilleFermeRose', name:'LA VIEILLE FERME ROSE', label:'라 비에이 페름 로제', unit:'5.5'},
-        {key:'moscatoSpumante', name:'MOSCATO SPUMANTE GOLD LABEL', label:'모스카토 스푸만테 골드라벨 / 룽가로티', unit:'5.5'},
-        {key:'ayalaBrutMajeur', name:'BRUT MAJEUR NV AYALA', label:'브뤼 마저 NV / 아얄라', unit:'24.5'},
-        {key:'somersbyApple', name:'Somersby Apple', label:'써머스비 애플', unit:'0.8'},
-        {key:'stellaArtois', name:'Stella Artois', label:'스텔라 아르투아', unit:'0.8'},
-        {key:'budweiser', name:'Budweiser', label:'버드와이저', unit:'0.8'},
-        {key:'kgbVodkaLemon', name:'KGB Vodka Lemon', label:'KGB 보드카 레몬', unit:'0.8'},
-        {key:'tigerRadler', name:'Tiger Radler Lemon', label:'타이거 라들러 레몬', unit:'0.8'},
-        {key:'kronenbourg1664', name:'Kronenbourg 1664 Blanc', label:'크로넨버그 1664 블랑', unit:'0.8'},
-        {key:'draftBeer20L', name:'생맥주 20L', label:'생맥주 20L', unit:'55'},
-        {key:'dongdongju20L', name:'동동주 20L', label:'동동주 20L', unit:'55'},
-        {key:'highball10L', name:'하이볼 10L', label:'하이볼 10L', unit:'55'},
-        {key:'pepsiRegular', name:'Pepsi', label:'펩시 일반', unit:'0.5'},
-        {key:'pepsiZero', name:'Pepsi Zero', label:'펩시 제로', unit:'0.5'},
-        {key:'drPepperRegular', name:'Dr Pepper', label:'닥터페퍼 일반', unit:'0.5'},
-        {key:'drPepperZero', name:'Dr Pepper Zero', label:'닥터페퍼 제로', unit:'0.5'},
-        {key:'spriteRegular', name:'Sprite', label:'스프라이트 일반', unit:'0.5'},
-        {key:'spriteZero', name:'Sprite Zero', label:'스프라이트 제로', unit:'0.5'},
-        {key:'sanpellegrinoGrapefruit', name:'Sanpellegrino Grapefruit', label:'산펠레그리노 과일 탄산 자몽', unit:'0.5'},
-        {key:'sanpellegrinoLemon', name:'Sanpellegrino Lemon', label:'산펠레그리노 과일 탄산 레몬', unit:'0.5'},
-        {key:'sanpellegrinoBloodOrange', name:'Sanpellegrino Blood Orange', label:'산펠레그리노 과일 탄산 레드오렌지', unit:'0.5'},
-        {key:'sanpellegrinoOrange', name:'Sanpellegrino Orange', label:'산펠레그리노 과일 탄산 오렌지', unit:'0.5'},
-        {key:'spellegrinoWater', name:'S.Pellegrino Sparkling Water', label:'산펠레그리노 탄산수', unit:'0.5'}
+        {key:'laVieilleFermeRouge', name:'VENTOUX ROUGE FAMILLE PERRIN', label:'벙뚜 루즈 파미유 페랑', unit:'5.5', group:'wine'},
+        {key:'luberonBlanc', name:'LUBERON BLANC FAMILLE PERRIN', label:'루베롱 블랑 / 파미유 페랑', unit:'5.5', group:'wine'},
+        {key:'cavaBrut', name:'MONASTERIOLO CAVA BRUT', label:'모나스테리올로 까바 브뤼', unit:'5.5', group:'wine'},
+        {key:'laVieilleFermeRose', name:'LA VIEILLE FERME ROSE', label:'라 비에이 페름 로제', unit:'5.5', group:'wine'},
+        {key:'moscatoSpumante', name:'MOSCATO SPUMANTE GOLD LABEL', label:'모스카토 스푸만테 골드라벨 / 룽가로티', unit:'5.5', group:'wine'},
+        {key:'ayalaBrutMajeur', name:'BRUT MAJEUR NV AYALA', label:'브뤼 마저 NV / 아얄라', unit:'24.5', group:'wine'},
+        {key:'somersbyApple', name:'Somersby Apple', label:'써머스비 애플', unit:'0.8', group:'canBottle'},
+        {key:'stellaArtois', name:'Stella Artois', label:'스텔라 아르투아', unit:'0.8', group:'canBottle'},
+        {key:'budweiser', name:'Budweiser', label:'버드와이저', unit:'0.8', group:'canBottle'},
+        {key:'kgbVodkaLemon', name:'KGB Vodka Lemon', label:'KGB 보드카 레몬', unit:'0.8', group:'canBottle'},
+        {key:'tigerRadler', name:'Tiger Radler Lemon', label:'타이거 라들러 레몬', unit:'0.8', group:'canBottle'},
+        {key:'kronenbourg1664', name:'Kronenbourg 1664 Blanc', label:'크로넨버그 1664 블랑', unit:'0.8', group:'canBottle'},
+        {key:'draftBeer20L', name:'생맥주 20L', label:'생맥주 20L', unit:'55', group:'bulk'},
+        {key:'dongdongju20L', name:'동동주 20L', label:'동동주 20L', unit:'55', group:'bulk'},
+        {key:'highball10L', name:'하이볼 10L', label:'하이볼 10L', unit:'55', group:'bulk'},
+        {key:'pepsiRegular', name:'Pepsi', label:'펩시 일반', unit:'0.5', group:'soda'},
+        {key:'pepsiZero', name:'Pepsi Zero', label:'펩시 제로', unit:'0.5', group:'soda'},
+        {key:'drPepperRegular', name:'Dr Pepper', label:'닥터페퍼 일반', unit:'0.5', group:'soda'},
+        {key:'drPepperZero', name:'Dr Pepper Zero', label:'닥터페퍼 제로', unit:'0.5', group:'soda'},
+        {key:'spriteRegular', name:'Sprite', label:'스프라이트 일반', unit:'0.5', group:'soda'},
+        {key:'spriteZero', name:'Sprite Zero', label:'스프라이트 제로', unit:'0.5', group:'soda'},
+        {key:'sanpellegrinoGrapefruit', name:'Sanpellegrino Grapefruit', label:'산펠레그리노 과일 탄산 자몽', unit:'0.5', group:'soda'},
+        {key:'sanpellegrinoLemon', name:'Sanpellegrino Lemon', label:'산펠레그리노 과일 탄산 레몬', unit:'0.5', group:'soda'},
+        {key:'sanpellegrinoBloodOrange', name:'Sanpellegrino Blood Orange', label:'산펠레그리노 과일 탄산 레드오렌지', unit:'0.5', group:'soda'},
+        {key:'sanpellegrinoOrange', name:'Sanpellegrino Orange', label:'산펠레그리노 과일 탄산 오렌지', unit:'0.5', group:'soda'},
+        {key:'spellegrinoWater', name:'S.Pellegrino Sparkling Water', label:'산펠레그리노 탄산수', unit:'0.5', group:'soda'}
       ];
 
+      const IS_ADMIN = new URLSearchParams(location.search).get('admin') === '1';
+      const FIREBASE_DRINK_IMAGE_PATH = 'tiltedHannam/drinkImages';
+
+      const CLOUDINARY_CONFIG = (window.CLOUDINARY_CONFIG && typeof window.CLOUDINARY_CONFIG === 'object')
+        ? window.CLOUDINARY_CONFIG
+        : {cloudName:'', uploadPreset:'', folder:'tilted-hannam', sources:['local','camera','url'], multiple:false};
+
+      const FIREBASE_CONFIG = (window.FIREBASE_CONFIG && typeof window.FIREBASE_CONFIG === 'object')
+        ? window.FIREBASE_CONFIG
+        : {apiKey:'', authDomain:'', databaseURL:'', projectId:'', storageBucket:'', messagingSenderId:'', appId:''};
+
+      let REMOTE_DRINK_IMAGE_MAP = {};
+      let FIREBASE_DRINK_IMAGE_MAP = {};
+      let ADMIN_RUNTIME_DRINK_IMAGE_MAP = {};
+      let FIREBASE_DRINK_REF = null;
+      let FIREBASE_DRINK_READY = false;
+
+      function validateImageUrl(url){
+        return /^https?:\/\//i.test(String(url || '').trim());
+      }
+
+      function normalizeDisplayImageUrl(url){
+        const raw = String(url || '').trim();
+        if(!raw || !/res\.cloudinary\.com/.test(raw)) return raw;
+        return raw.replace('/image/upload/', '/image/upload/f_auto,q_auto,c_limit,w_800/');
+      }
+
+      function cloudinaryReady(){
+        return !!(window.cloudinary && CLOUDINARY_CONFIG.cloudName && CLOUDINARY_CONFIG.uploadPreset);
+      }
+
+      function firebaseReady(){
+        return !!(window.firebase && FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.databaseURL);
+      }
+
+      function cleanImageMap(data){
+        const out = {};
+        if(!data || typeof data !== 'object') return out;
+        Object.keys(data).forEach((key) => {
+          const item = data[key];
+          const url = typeof item === 'string' ? item : (item && item.url) || '';
+          if(validateImageUrl(url)) out[key] = String(url).trim();
+        });
+        return out;
+      }
+
+      function getMergedDrinkImageMap(){
+        return Object.assign({}, REMOTE_DRINK_IMAGE_MAP, FIREBASE_DRINK_IMAGE_MAP, ADMIN_RUNTIME_DRINK_IMAGE_MAP);
+      }
+
+      async function loadRemoteDrinkImageMap(){
+        try{
+          const res = await fetch('./drink_image_map.json', {cache:'no-store'});
+          if(!res.ok) throw new Error('load failed');
+          REMOTE_DRINK_IMAGE_MAP = cleanImageMap(await res.json());
+        }catch(e){
+          REMOTE_DRINK_IMAGE_MAP = {};
+        }
+      }
+
+      function initFirebaseRealtimeDrinkImages(){
+        if(!firebaseReady()) return;
+        try{
+          const app = window.firebase.apps && window.firebase.apps.length ? window.firebase.app() : window.firebase.initializeApp(FIREBASE_CONFIG);
+          const db = window.firebase.database();
+          FIREBASE_DRINK_REF = db.ref(FIREBASE_DRINK_IMAGE_PATH);
+          FIREBASE_DRINK_READY = true;
+          FIREBASE_DRINK_REF.on('value', (snapshot) => {
+            FIREBASE_DRINK_IMAGE_MAP = cleanImageMap(snapshot.val());
+            renderDrinkItems();
+          }, (error) => {
+            console.error('Firebase drink image sync failed', error);
+          });
+        }catch(e){
+          FIREBASE_DRINK_READY = false;
+          console.error('Firebase init failed', e);
+        }
+      }
+
+      function setDrinkImage(key, url){
+        const clean = String(url || '').trim();
+        if(!clean){
+          deleteDrinkImage(key);
+          return;
+        }
+        ADMIN_RUNTIME_DRINK_IMAGE_MAP[key] = clean;
+        renderDrinkItems();
+        if(FIREBASE_DRINK_READY && FIREBASE_DRINK_REF){
+          FIREBASE_DRINK_REF.child(key).set(clean).catch((error) => {
+            console.error('Firebase drink image save failed', error);
+            alert('Firebase 저장 실패: Database Rules 또는 firebase.config.js를 확인하세요.');
+          });
+        }
+      }
+
+      function deleteDrinkImage(key){
+        delete ADMIN_RUNTIME_DRINK_IMAGE_MAP[key];
+        delete FIREBASE_DRINK_IMAGE_MAP[key];
+        renderDrinkItems();
+        if(FIREBASE_DRINK_READY && FIREBASE_DRINK_REF){
+          FIREBASE_DRINK_REF.child(key).remove().catch((error) => {
+            console.error('Firebase drink image delete failed', error);
+            alert('Firebase 삭제 실패: Database Rules 또는 firebase.config.js를 확인하세요.');
+          });
+        }
+      }
+
+      function openDrinkImageUpload(targetKey, afterUpload){
+        if(!IS_ADMIN){
+          alert('admin mode only');
+          return;
+        }
+        if(!cloudinaryReady()){
+          alert('cloudinary.config.js 설정이 필요합니다.');
+          return;
+        }
+        const widget = window.cloudinary.createUploadWidget({
+          cloudName: CLOUDINARY_CONFIG.cloudName,
+          uploadPreset: CLOUDINARY_CONFIG.uploadPreset,
+          folder: CLOUDINARY_CONFIG.folder || 'tilted-hannam',
+          sources: Array.isArray(CLOUDINARY_CONFIG.sources) ? CLOUDINARY_CONFIG.sources : ['local','camera','url'],
+          multiple: false,
+          resourceType: 'image',
+          clientAllowedFormats: ['jpg','jpeg','png','webp','avif'],
+          maxFiles: 1,
+          showAdvancedOptions: false,
+          cropping: false,
+          theme: 'minimal'
+        }, (error, result) => {
+          if(error){
+            console.error(error);
+            alert('업로드 실패');
+            return;
+          }
+          if(result && result.event === 'success'){
+            const secureUrl = result.info && result.info.secure_url ? result.info.secure_url : '';
+            if(secureUrl){
+              setDrinkImage(targetKey, secureUrl);
+              if(typeof afterUpload === 'function') afterUpload(secureUrl);
+            }
+          }
+        });
+        widget.open();
+      }
+
+      function downloadTextFile(filename, text, mime){
+        const blob = new Blob([text], {type: mime || 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportDrinkImageMap(){
+        if(!IS_ADMIN){
+          alert('admin mode only');
+          return;
+        }
+        const merged = getMergedDrinkImageMap();
+        const cleaned = {};
+        Object.keys(merged).sort().forEach((k) => {
+          const v = String(merged[k] || '').trim();
+          if(validateImageUrl(v)) cleaned[k] = v;
+        });
+        if(!Object.keys(cleaned).length){
+          alert('no image urls to export.');
+          return;
+        }
+        downloadTextFile('drink_image_map.json', JSON.stringify(cleaned, null, 2));
+      }
+
+      function renderDrinkItems(){
+        const groups = root.querySelectorAll('[data-drink-group]');
+        groups.forEach((grid) => {
+          const groupName = grid.dataset.drinkGroup;
+          grid.innerHTML = '';
+          DRINK_CATALOG.filter((item) => item.group === groupName).forEach((item) => {
+            grid.appendChild(buildDrinkCard(item));
+          });
+        });
+        renderDrinkControls();
+      }
+
+      function buildDrinkCard(item){
+        const imageMap = getMergedDrinkImageMap();
+        const src = normalizeDisplayImageUrl(imageMap[item.key] || '');
+
+        const card = document.createElement('div');
+        card.className = 'th-drink-item';
+
+        const canvas = document.createElement('div');
+        canvas.className = 'th-drink-canvas';
+        if(src){
+          const img = document.createElement('img');
+          img.src = src;
+          img.alt = item.name;
+          canvas.appendChild(img);
+        }else{
+          const ph = document.createElement('div');
+          ph.className = 'th-drink-placeholder';
+          ph.textContent = '이미지 없음';
+          canvas.appendChild(ph);
+        }
+
+        const info = document.createElement('label');
+        info.className = 'th-drink-info';
+        const meta = document.createElement('span');
+        meta.innerHTML = '<span class="th-drink-name"></span><span class="th-drink-meta"></span>';
+        meta.querySelector('.th-drink-name').textContent = item.name;
+        meta.querySelector('.th-drink-meta').textContent = item.label + ' · ' + item.unit;
+
+        const qtyInput = document.createElement('input');
+        qtyInput.className = 'th-drink-qty';
+        qtyInput.type = 'number';
+        qtyInput.min = '0';
+        qtyInput.step = '1';
+        qtyInput.placeholder = '0';
+        qtyInput.dataset.drinkQty = item.key;
+        qtyInput.addEventListener('input', () => {
+          const value = Math.max(0, Math.floor(Number(qtyInput.value || 0)));
+          if(value > 0) state.drinks.items[item.key] = value;
+          else delete state.drinks.items[item.key];
+          renderDrinkControls();
+          renderSummary();
+        });
+
+        info.appendChild(meta);
+        info.appendChild(qtyInput);
+
+        const tools = document.createElement('div');
+        tools.className = 'th-drink-tools adminOnly';
+
+        const urlInput = document.createElement('input');
+        urlInput.type = 'text';
+        urlInput.placeholder = 'image url';
+        urlInput.value = imageMap[item.key] || '';
+        urlInput.addEventListener('click', (e) => e.stopPropagation());
+
+        const btnUpload = document.createElement('button');
+        btnUpload.type = 'button';
+        btnUpload.textContent = '업로드';
+        btnUpload.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openDrinkImageUpload(item.key, (secureUrl) => { urlInput.value = secureUrl; });
+        });
+
+        const btnApply = document.createElement('button');
+        btnApply.type = 'button';
+        btnApply.textContent = '적용';
+        btnApply.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setDrinkImage(item.key, urlInput.value);
+        });
+
+        const btnDel = document.createElement('button');
+        btnDel.type = 'button';
+        btnDel.textContent = '삭제';
+        btnDel.addEventListener('click', (e) => {
+          e.stopPropagation();
+          deleteDrinkImage(item.key);
+        });
+
+        tools.appendChild(urlInput);
+        tools.appendChild(btnUpload);
+        tools.appendChild(btnApply);
+        tools.appendChild(btnDel);
+
+        card.appendChild(canvas);
+        card.appendChild(info);
+        card.appendChild(tools);
+        return card;
+      }
 
       function getMealCountValue(){
         if(!mealCountInput) return 0;
@@ -1367,17 +1626,6 @@
         });
       });
 
-      root.querySelectorAll('[data-drink-qty]').forEach(input => {
-        input.addEventListener('input',() => {
-          const key = input.dataset.drinkQty;
-          const value = Math.max(0, Math.floor(Number(input.value || 0)));
-          if(value > 0) state.drinks.items[key] = value;
-          else delete state.drinks.items[key];
-          renderDrinkControls();
-          renderSummary();
-        });
-      });
-
       const requestNoteInput = root.querySelector('#th-request-note');
       if(requestNoteInput){
         requestNoteInput.addEventListener('input',() => {
@@ -1462,8 +1710,17 @@
 
       svg.addEventListener('pointercancel',() => {drag=null; rotateDrag=null;});
 
+      const exportDrinkImagesBtn = root.querySelector('#th-export-drink-images');
+      if(exportDrinkImagesBtn) exportDrinkImagesBtn.addEventListener('click', exportDrinkImageMap);
+
       autoSelectAllSeatsByMealCount();
+      renderDrinkItems();
       renderAll();
+
+      loadRemoteDrinkImageMap().then(() => {
+        renderDrinkItems();
+        initFirebaseRealtimeDrinkImages();
+      });
     })();
   </script>
 </div>
